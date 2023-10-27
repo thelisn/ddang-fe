@@ -4,6 +4,9 @@ import { io } from "socket.io-client";
 export const state = reactive({
   connected: false,
   loginError: false,
+  isUser: false,
+  userName: null,
+  isAdmin: false,
   fooEvents: [],
   barEvents: []
 });
@@ -25,7 +28,14 @@ socket.on("login-error", () => {
   state.loginError = true;
 });
 
-socket.on("login-success", () => {
+socket.on("login-success", (data) => {
   state.loginError = false;
+  state.userName = data.id;
+
+  if (data.userType === 'admin') {
+    state.isAdmin = true;
+  } else {
+    state.isUser = true;
+  }
 });
 
