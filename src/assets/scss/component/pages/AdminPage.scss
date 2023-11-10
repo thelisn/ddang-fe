@@ -1,0 +1,133 @@
+#admin-page {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 21px 35px 21px 50px;
+    border-bottom: 1px solid #000;
+
+    .title { 
+      font-size: 48px;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+
+      .badge {
+        padding: 3px 18px 5px;
+        border-radius: 20px;
+        border: 1px solid #000;
+        font-size: 24px;
+        font-weight: 500;
+        color: #000;
+        margin-right: 17px;
+      }
+
+      .name {
+        font-size: 48px;
+        font-weight: 500;
+        color: #000;
+        padding-bottom: 4px;
+      }
+    }
+  }
+
+  .contents {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 23px 50px 0;
+
+    .status {
+      position: relative;
+      width: 30%;
+
+      .now-container {
+        margin-top: 18px;
+        height: 821px;
+
+        .question-number,
+        .question-text {
+          font-size: 24px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 38px;
+        }
+
+        .question-finish-user {
+          font-size: 36px;
+          margin-top: 46px;
+        }
+      }
+
+      .show-answer-btn {
+        position: absolute;
+        bottom: 13px;
+        background: #757575;
+        font-size: 48px;
+        font-weight: 500;
+        padding: 33px 0;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    .questions {
+      width: 30%;
+
+      .question-container {
+        padding: 17px 0 21px 28px;
+        height: 821px;
+
+        .question-area {
+
+          width: 200px;
+          height: 200px;
+          
+          .question-number {
+            font-size: 32px;
+            color: #000;
+          }
+    
+          .question-text {
+            font-size: 32px;
+            color: #000;
+          }
+        }
+
+      }
+    }
+
+    .alive {
+      width: 15%;
+
+      .alive-container {
+        padding: 17px 0 7px 23px;
+        height: 821px;
+      }
+    }
+
+    .dead {
+      width: 15%;
+
+      .dead-container {
+        padding: 17px 0 7px 23px;
+        height: 821px;
+      }
+    }
+
+    .title-text {
+      font-size: 36px;
+      font-weight: 500;
+      color: #000;
+    }
+
+    .container {
+        border: 1px solid #111;
+        margin-top: 5px;
+    }
+  }
+}

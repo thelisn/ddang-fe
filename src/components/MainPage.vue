@@ -1,63 +1,110 @@
 <template>
-  <div class="container">
-
-    <div v-if="!userName">
-
-      <form class="form-container" @submit.prevent="login">
-        <input v-model="id" name="id" placeholder="원하는 아이디 입력" />
-        <button type="submit">로그인</button>
-      </form>
-      <p v-if="loginError">{{ errMsg }}</p>
+  <div id="main-page" class="main-container">
+  
+    <div class="logo-wrap">
+      <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </div>
-    <div v-else>
-      {{ userName }}으로 현재 로그인중입니다.
+
+    <div class="input-wrap">
+      <input id="lisn-input" type="text" v-model="id" name="id" :disabled="isLoggedIn" />
+      <label for="lisn-input" class="input-label">사번 or 이름</label>
     </div>
+
+    <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
+    <button v-else class="login-btn" @click="rejoin">재입장하기</button>
   </div>
 </template>
 
 <script>
-import router from "@/router";
 import { state, socket } from "@/socket";
-import { useRouter, useRoute } from 'vue-router'
-
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted, ref, onBeforeUnmount, computed } from "vue";
+import { useStore } from "vuex";
+import axios from 'axios';
 
 
 export default {
   name: "MainPage",
   setup() {
+    // 변수 정의
     const router = useRouter();
     const route = useRoute();
+    const id = ref("");
+    const store = useStore();
+    const isLoggedIn = ref(false);
+    // const test = computed(() => store.state.name);
+
+    // 함수 정의
+    const login = () => {
+      socket.emit('login', id.value.toUpperCase());
+    };
+
+    const setLocalStorage = (data) => {
+      let localData = localStorage.getItem('userInfo');
+
+      if (!localData) { 
+        localStorage.setItem('userInfo', JSON.stringify({
+          name: data.name,
+          einumber: data.einumber,
+          teamName: data.team,
+          isAdmin: data.isAdmin
+        }));
+      }
+      router.push('/waiting');
+
+
+    };
+
+    const rejoin = () => {
+      let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+      socket.emit('rejoin', userInfo);
+      router.push('/waiting');
+    };
+
+    
+
+    // Life Cycle
+    onMounted(() => {
+      let localData = localStorage.getItem('userInfo');
+
+      if (localData) {
+        isLoggedIn.value = true;
+      } else {
+        isLoggedIn.value = false;
+      }
+      
+
+      socket.on('login', (data) => {
+        if (data.error === true) {
+          alert(data.msg)
+        } else {
+          setLocalStorage(data.userData);
+          store.commit("setUserInfo", data.userData);
+        }
+      });
+    });
+
+    onBeforeUnmount(() => {
+      socket.off('login');
+    });
+
 
     return {
-      route,
-      router
+      login,
+      id,
+      isLoggedIn,
+      rejoin
     }
   },  
   data() {
     return {
-      id: null,
       errMsg: null
     }
-  },
-  mounted() {
-    socket.on('login-success', (data) => {
-      if (data.userType === 'user') {
-        router.push("/user");
-      } else {
-        router.push("/admin");
-      }
-    });
-
-    socket.on('login-error', (err) => {
-      this.errMsg = err;
-    });
   },
   computed: {
     connected() {
       return state.connected;
-    },
-    loginError() {
-      return state.loginError;
     },
     isUser() {
       return state.isUser;
@@ -68,29 +115,9 @@ export default {
     allUsers() {
       return state.allUsers;
     },
-    userName() {
-      return state.userName;
-    }
-  },
-  methods: {
-    login(event) {
-      socket.emit('login', event.target.elements.id.value);
-    }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.container {
-  height: 100vh;
-  background-color: lightblue;
-
-  .form-container {
-    display: flex;
-    position: relative;
-    top: 50%;
-    width: max-content;
-    margin: 0 auto;
-  }
-}
+<style lang="scss" scoped src="@/assets/scss/component/pages/MainPage.scss">
 </style>

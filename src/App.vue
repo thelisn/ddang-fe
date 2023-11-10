@@ -5,8 +5,8 @@
 <script setup>
 </script>
 
-<style>
+<style lang="scss">
 body {
-  margin: 0;
+  font-family: "Noto Sans KR", "Nanum Gothic", "Roboto", sans-serif;
 }
 </style>

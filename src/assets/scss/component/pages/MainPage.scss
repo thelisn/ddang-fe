@@ -1,0 +1,64 @@
+#main-page {
+  position: relative;
+  background-color: #111;
+  padding: 120px 20px 20px;
+  height: 100vh;
+
+  .logo-wrap {
+    display: flex;
+    justify-content: center;
+
+    .lisn {
+      width: 150px;
+      height: auto;
+    }
+  }
+
+  .input-wrap {
+    margin-top: 200px;
+    position: relative;
+
+    #lisn-input {
+      width: 100%;
+      height: 56px;
+      border-bottom: 4px solid #999;
+      background-color: transparent;
+      transition: 0.3s all;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 500;
+
+      &:focus {
+        border-bottom: 4px solid #fff;
+      }
+    }
+
+
+    .input-label {
+      position: absolute;
+      height: 26px;
+      top: -26px;
+      left: 0;
+      font-size: 16px;
+      font-weight: 500; 
+      color: #fff;
+    }
+
+  }
+
+  .login-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: calc(100% - 40px);
+    height: 60px;
+    border-radius: 20px;
+    font-size: 22px;
+    background-color: #fff;
+    color: #111;
+	  font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+
+  }
+}
+

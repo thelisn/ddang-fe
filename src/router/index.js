@@ -1,7 +1,9 @@
 import { createWebHistory, createRouter } from "vue-router";
 import MainPage from "@/components/MainPage.vue";
-import UserPage from "@/components/UserPage.vue";
+import WaitingRoom from "@/components/WaitingRoom.vue";
 import AdminPage from "@/components/AdminPage.vue";
+import QuizPage from "@/components/QuizPage.vue";
+import ResultPage from "@/components/ResultPage.vue";
 
 const routes = [
     {
@@ -10,15 +12,25 @@ const routes = [
         component: MainPage,
     },
     {
-        path: "/user", 
-        name: "UserPage",  
-        component: UserPage,  
+        path: "/waiting", 
+        name: "WatingRoom",  
+        component: WaitingRoom,  
     },
     {
-      path: "/admin", 
-      name: "AdminPage",  
-      component: AdminPage,  
-  },
+        path: "/admin", 
+        name: "AdminPage",  
+        component: AdminPage,  
+    },
+    {
+        path: "/quiz", 
+        name: "QuizPage",  
+        component: QuizPage,  
+    },
+    {
+        path: "/result", 
+        name: "ResultPage",  
+        component: ResultPage,  
+    },
 ];
 
 const router = createRouter({
