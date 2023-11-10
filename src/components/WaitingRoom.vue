@@ -118,8 +118,6 @@ export default {
       teamData,
       isAdmin,
       checkHeight,
-      name1,
-      num1
     }
   }
 }
