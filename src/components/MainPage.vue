@@ -1,12 +1,13 @@
 <template>
   <div id="main-page" class="main-container">
-  
+    <button @click="testFunc">Test Button</button>
+
     <div class="logo-wrap">
       <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </div>
 
     <div class="input-wrap">
-      <input id="lisn-input" type="text" v-model="id" name="id" :disabled="isLoggedIn" />
+      <input id="lisn-input" type="text" v-model="input" name="id" :disabled="isLoggedIn" />
       <label for="lisn-input" class="input-label">사번 or 이름</label>
     </div>
 
@@ -29,14 +30,20 @@ export default {
     // 변수 정의
     const router = useRouter();
     const route = useRoute();
-    const id = ref("");
+    const input = ref("");
     const store = useStore();
     const isLoggedIn = ref(false);
     // const test = computed(() => store.state.name);
 
     // 함수 정의
+    const testFunc = () => {
+      socket.emit('test', {
+        number: 3,
+        correctAnswer: 2
+      });
+    }
     const login = () => {
-      socket.emit('login', id.value.toUpperCase());
+      socket.emit('login', input.value.toUpperCase());
     };
 
     const setLocalStorage = (data) => {
@@ -44,6 +51,7 @@ export default {
 
       if (!localData) { 
         localStorage.setItem('userInfo', JSON.stringify({
+          id: data.id,
           name: data.name,
           einumber: data.einumber,
           teamName: data.team,
@@ -92,9 +100,10 @@ export default {
 
     return {
       login,
-      id,
+      input,
       isLoggedIn,
-      rejoin
+      rejoin,
+      testFunc
     }
   },  
   data() {

@@ -32,9 +32,10 @@
 import LisnHeader from "./LisnHeader.vue";
 import { state, socket } from "@/socket";
 import { useStore } from "vuex";
-import { getClass } from "@/utils";
+import { getClass, getUserInfo } from "@/utils";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import router from "@/router";
+import axios from 'axios';
 
 export default {
   name: "WaitingRoom",
@@ -47,13 +48,13 @@ export default {
     const currentQuestion = ref(null);
     const teamData = ref(null);
     const isAdmin = ref(null);
-    const checkHeight = ref(false);                       
-
+    const checkHeight = ref(false);  
+    const isData = ref(false);                     
+    const userInfo = ref(null);
     // 함수
     const joinQuiz = () => {
       // 사번을 파라미터로 보낸다
-      const sendEinumber = JSON.parse(localStorage.getItem('userInfo')).einumber;
-      socket.emit('join-quiz', sendEinumber);
+      socket.emit('join-quiz', userInfo.value.einumber);
       router.push('/quiz');
     }
 
@@ -64,6 +65,8 @@ export default {
 
     // Life Cycle
     onMounted(() => {
+      userInfo.value = getUserInfo();
+
       socket.on('login', (data) => {
         currentQuestion.value = data.currentQuestion;
 
@@ -71,6 +74,7 @@ export default {
 
         data.teamData.forEach((person) => {
           const { team } = person;
+          
           if (!teams[team]) {
             teams[team] = [];
           }
@@ -78,12 +82,13 @@ export default {
         });
 
         teamData.value = teams;
-
         isAdmin.value = data.userData.isAdmin;
+        isData.value = true;
+        console.log(data)
       });
 
       socket.on('start-quiz', (data) => {
-        console.log(data)
+        currentQuestion.value = data;
       });
 
       socket.on('rejoin', (data) => {
@@ -102,6 +107,31 @@ export default {
       
         isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
       });
+
+      setTimeout(async () => {
+        if (!isData.value) {
+          await axios.get('/api/waiting').then(res => {
+            isAdmin.value = userInfo.value.isAdmin;
+            
+            if (res.data.currentQuestion) {
+              currentQuestion.value = res.data.currentQuestion;
+            }
+
+            let teams = {};
+            res.data.userData.forEach((person) => {
+              const { team } = person;
+
+              if (!teams[team]) {
+                teams[team] = [];
+              }
+
+              teams[team].push(person);
+            });
+  
+            teamData.value = teams;
+          });
+        }
+      }, 500);
     });
 
     onBeforeUnmount(() => {

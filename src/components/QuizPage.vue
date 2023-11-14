@@ -15,7 +15,6 @@
           </li>
         </ul>
       </div>
-
     </section>
   </div>
 </template>
@@ -26,6 +25,8 @@ import { getClass } from "@/utils";
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import LisnHeader from "@/components/LisnHeader.vue"
+import { getUserInfo } from "@/utils";
+import axios from 'axios';
 
 export default {
   name: 'QuizPage',
@@ -40,40 +41,63 @@ export default {
     const answers = ref(null);
     const selectedAnswer = ref(false);
     const isAlive = ref(null);
+    const isData = ref(null);
+    const userInfo = ref(null);
 
     // 함수
-    const selectAnswer = (idx) => {
-      let einumber = JSON.parse(localStorage.getItem('userInfo')).einumber;
-
+    const selectAnswer = (idx) => {      
       selectedAnswer.value = idx;
-
+      
       // 사용자가 선택한 답, 문제번호, 사번을 파라미터로 넘김
       socket.emit('select-answer', {
-        answer: 3,
-        einumber,
-        number: 2
+        answer: selectedAnswer.value,  // 사용자가 선택한 답
+        number: questionNumber.value,  // 문제 번호
+        userInfo: userInfo.value // 사용자 정보
       });
     };
 
     // Life Cycle
     onMounted(() => {
+      userInfo.value = getUserInfo();
+
       socket.on('join-quiz', (data) => {
+        console.log(data)
         answers.value = data.answers;
         question.value = data.question;
         questionNumber.value = data.number;
         isAlive.value = data.isAlive;
+        isData.value = true;
       });
 
       socket.on('show-answer', (data) => {
         // 사번, 문제 넘버, 답안을 파라미터로 넘긴다
         socket.emit('check-answer', {
-          einumber: 'JA000887',
-          number: 2,
-          correctAnswer: data
+          userInfo: userInfo.value,
+          number: data.currentQuestion,
+          correctAnswer: data.correctAnswer
         });
 
         router.push('/result');
       });
+
+      setTimeout(async () => {
+        if (!isData.value) {
+          await axios.get('/api/quiz', {
+            params: {
+              userInfo: userInfo.value
+            }
+          }).then(res => {
+            answers.value = res.data.answers;
+            question.value = res.data.question;
+            questionNumber.value = res.data.number;
+            isAlive.value = res.data.isAlive;
+
+            if (res.data.selectedAnswer) {
+              selectedAnswer.value = res.data.selectedAnswer;
+            }
+          });
+        }
+      }, 500);
     });
 
     onBeforeUnmount(() => {
@@ -88,7 +112,7 @@ export default {
       question,
       questionNumber,
       selectedAnswer,
-      isAlive
+      isAlive,
     }
   }
 }

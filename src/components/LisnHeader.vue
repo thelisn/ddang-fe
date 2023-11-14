@@ -4,7 +4,8 @@
       <img class="lisn-header" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </h1>
     <div class="user-area">
-      <div class="user-status" :class="getClass()"></div>
+      <div v-if="isAdmin" class="admin-status">ADMIN</div>
+      <div v-else class="user-status" :class="getClass()"></div>
       <p class="user-name">{{ userName }}</p>
     </div>
   </div>
@@ -19,6 +20,7 @@ export default {
   setup() {
     // 변수
     const userName = ref(null);
+    const isAdmin = ref(false);
 
     // 함수
     
@@ -26,12 +28,14 @@ export default {
     // Life Cycle
     onMounted(() => {
       userName.value = JSON.parse(localStorage.getItem('userInfo')).name;
+      isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
     });
 
 
     return {
       userName,
-      getClass
+      getClass,
+      isAdmin
     }
   },
 }

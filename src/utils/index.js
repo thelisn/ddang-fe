@@ -19,3 +19,23 @@ exports.getClass = (data) => {  // 파라미터로 team 이름 넘기거나 null
     return 'admin'
   }
 }
+
+exports.getUserInfo = () => {
+  let result = JSON.parse(localStorage.getItem('userInfo'));
+
+  return result
+}
+
+exports.sortTeamMember = (data) => {
+  let teams = {};
+
+  data.forEach((person) => {
+    const { teamName } = person;
+    if (!teams[teamName]) {
+      teams[teamName] = [];
+    }
+    teams[teamName].push(person);
+  });
+
+  return teams;
+}
