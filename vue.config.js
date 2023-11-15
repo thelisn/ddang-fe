@@ -6,7 +6,8 @@ module.exports = defineConfig({
       "/api": {
         target: "http://localhost:3000"
       }
-    }
+    },
+    allowedHosts: "all"
   },
   css : {
     loaderOptions : {
