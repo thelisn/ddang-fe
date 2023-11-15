@@ -15,7 +15,7 @@
 
 <script>
 import { SOCKET_EVENT, socket } from '@/socket'
-import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 
@@ -28,7 +28,6 @@ export default {
     /*
       변수 정의
      */
-
     const input = ref('')
 
     /*

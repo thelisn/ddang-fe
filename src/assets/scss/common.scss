@@ -1,0 +1,8 @@
+.user-status {
+  margin-right: 9px;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 8px solid #555555;
+  transition: border-width 0.15s ease, color 0.15s ease;
+}

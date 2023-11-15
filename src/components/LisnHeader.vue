@@ -3,41 +3,42 @@
     <h1 class="quiz-header">
       <img class="lisn-header" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </h1>
-    <div class="user-area">
-      <div v-if="isAdmin" class="admin-status">ADMIN</div>
-      <div v-else class="user-status" :class="getClass()"></div>
-      <p class="user-name">{{ userName }}</p>
+    <div class="user-area" v-if="userInfo">
+      <div v-if="userInfo.isAdmin" class="admin-status">ADMIN</div>
+      <div v-else class="user-status" :style="{ borderColor: teamInfo(userInfo.TeamId).color }"></div>
+      <p class="user-name">{{ userInfo.name }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import { getClass } from "@/utils/index"
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
-  name: "LisnHeader",
+  name: 'LisnHeader',
+
   setup() {
-    // 변수
-    const userName = ref(null);
-    const isAdmin = ref(false);
+    const store = useStore()
 
-    // 함수
-    
+    const userInfo = computed(() => store.state.userInfo)
 
-    // Life Cycle
     onMounted(() => {
-      userName.value = JSON.parse(localStorage.getItem('userInfo')).name;
-      isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
-    });
+      if (!userInfo.value) {
+        let localData = localStorage.getItem('userInfo')
+        if (localData) {
+          store.commit('setUserInfo', JSON.parse(localData))
+        }
+      }
+    })
 
+    const teamInfo = (TeamId) => store.getters.teamInfo(TeamId)
 
     return {
-      userName,
-      getClass,
-      isAdmin
+      userInfo,
+      teamInfo
     }
-  },
+  }
 }
 </script>
 

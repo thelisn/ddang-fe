@@ -1,20 +1,33 @@
-import { createStore } from "vuex";
+import { createStore } from 'vuex'
 
-// state, getters, mutations, actions, modules
 export default createStore({
     state : {
-      name: '',
-      eiNumber: '',
-      teamName: '',
-      isAdmin: null,
+      userInfo: null,
+      teamList: null,
+      currentQuestion: null
     },
-    getters : {},
-    mutations : {
-      setUserInfo(state, data) {
-        state.name = data.name;
-        state.eiNumber = data.eiNumber;
-        state.teamName = data.team;
-        state.isAdmin = data.isAdmin;
+
+    getters : {
+      teamInfo: (state) => (teamId) => {
+        let result = {}
+        if (state.teamList) {
+          result = state.teamList.find(team => team.id == teamId) || result
+        }
+        return result
       }
     },
-});
+
+    mutations : {
+      setUserInfo: (state, data) => {
+        state.userInfo = data
+      },
+      
+      setTeamList: (state, data) => {
+        state.teamList = data
+      },
+
+      setCurrentQuestion: (state, data) => {
+        state.currentQuestion = data
+      }
+    }
+})

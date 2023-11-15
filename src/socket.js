@@ -1,5 +1,7 @@
 export const  SOCKET_EVENT = {
-  LOGIN: 'login'
+  LOGIN: 'login',
+  START_QUIZ: 'start_quiz',
+  JOIN_QUIZ: 'join_quiz'
 }
 
 import { reactive } from "vue";
