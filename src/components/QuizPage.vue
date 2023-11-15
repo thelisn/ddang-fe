@@ -45,7 +45,8 @@ export default {
     const userInfo = ref(null);
 
     // 함수
-    const selectAnswer = (idx) => {      
+    const selectAnswer = (idx) => {     
+      console.log(idx); 
       selectedAnswer.value = idx;
       
       // 사용자가 선택한 답, 문제번호, 사번을 파라미터로 넘김
@@ -67,6 +68,7 @@ export default {
         questionNumber.value = data.number;
         isAlive.value = data.isAlive;
         isData.value = true;
+        selectedAnswer.value = data.selectedAnswer;
       });
 
       socket.on('show-answer', (data) => {

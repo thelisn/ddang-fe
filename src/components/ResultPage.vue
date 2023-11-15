@@ -84,7 +84,7 @@ export default {
 
       socket.on('start-quiz', (data) => {
         // 사번을 파라미터로 보낸다
-        socket.emit('join-quiz', userInfo.value.einumber);
+        socket.emit('join-quiz', userInfo.value);
 
         router.push('/quiz');
       });

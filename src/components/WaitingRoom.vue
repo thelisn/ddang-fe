@@ -54,7 +54,7 @@ export default {
     // 함수
     const joinQuiz = () => {
       // 사번을 파라미터로 보낸다
-      socket.emit('join-quiz', userInfo.value.einumber);
+      socket.emit('join-quiz', userInfo.value);
       router.push('/quiz');
     }
 

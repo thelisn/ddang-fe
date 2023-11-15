@@ -9,7 +9,7 @@
     </div>
 
     <div v-if="currentQuestion" class="answer-container">
-      <p class="status">34/52명 (78%) 완료</p>
+      <p class="status">{{ currentUser }} 명/{{ totalUser }} 명 (78%) 완료</p>
       <div class="status-view"></div>
       <button class="show-answer" @click="showAnswer">정답 공개</button>
     </div>
@@ -97,6 +97,8 @@ export default {
     const isData = ref(false);
     const userInfo = ref();
     const isLoading = ref(true);
+    const totalUser = ref(0);
+    const currentUser = ref(0);
     const instance = getCurrentInstance();
 
 
@@ -154,10 +156,11 @@ export default {
       await axios.get('/api/admin').then(res => {
         questionData.value = res.data.questionData;
         userData.value = res.data.userData;
-        
         if (res.data.currentQuestion) {
           currentQuestion.value = res.data.currentQuestion;
         }
+        currentUser.value = res.data.currentUser;
+        totalUser.value = res.data.totalUser;
 
         currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
         isLoading.value = false;
@@ -165,7 +168,6 @@ export default {
         instance?.proxy?.$forceUpdate();
       });
     }
-
 
     // Life Cycle
     onMounted(() => {
@@ -177,7 +179,8 @@ export default {
           currentQuestion.value = data.currentQuestion;
         }
         console.log(data, 'mounted');
-
+        currentUser.value = data.currentUser;
+        totalUser.value = data.totalUser;
         isLoading.value = false;
         questionData.value = data.questionData;
         currentQuestionData.value = data.questionData.filter((data) => data.number === currentQuestion.value)[0];
@@ -189,7 +192,6 @@ export default {
 
       // 부활 요청시 실행
       socket.on('revive', async () => {
-        console.log('revive')
         updatePage();
       });
 
@@ -197,6 +199,25 @@ export default {
       socket.on('login', async () => {
         updatePage();
       });
+
+      // 유저가 퀴즈에 접속했을 때
+      socket.on('join-quiz', () => {
+        socket.emit('update-current-user', currentQuestion.value);
+      })
+
+      // 유저가 보기 클릭했을 때
+      socket.on('select-answer', () => {
+        socket.emit('update-current-user', currentQuestion.value);
+      });
+
+      // 현재 문제 푼 유저 정보 업데이트
+      socket.on('update-current-user', (data) => {
+        currentUser.value = data.currentUser;
+        totalUser.value = data.totalUser;
+        updatePage();
+      });
+
+
 
       // 새로고침 시 실행
       setTimeout(async () => {
@@ -210,6 +231,9 @@ export default {
       socket.off('join-admin-quiz');
       socket.off('revive');
       socket.off('login');
+      socket.off('select-answer');
+      socket.off('update-current-user');
+      socket.off('join-quiz');
     });
 
     return {
@@ -224,7 +248,9 @@ export default {
       currentQuestion,
       currentQuestionData,
       isLoading,
-      teamData
+      teamData,
+      currentUser,
+      totalUser
     }
   }
 }
