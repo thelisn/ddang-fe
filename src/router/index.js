@@ -1,5 +1,7 @@
-import { createWebHistory, createRouter } from "vue-router";
-import MainPage from "@/components/MainPage.vue";
+import { createWebHistory, createRouter } from "vue-router"
+
+import LoginPage from "@/pages/LoginPage.vue"
+
 import WaitingRoom from "@/components/WaitingRoom.vue";
 import AdminPage from "@/components/AdminPage.vue";
 import QuizPage from "@/components/QuizPage.vue";
@@ -8,8 +10,8 @@ import ResultPage from "@/components/ResultPage.vue";
 const routes = [
     {
         path: "/",
-        name: "MainPage",
-        component: MainPage,
+        name: "Login",
+        component: LoginPage,
     },
     {
         path: "/waiting", 
