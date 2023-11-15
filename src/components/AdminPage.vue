@@ -9,7 +9,7 @@
     </div>
 
     <div v-if="currentQuestion" class="answer-container">
-      <p class="status">{{ currentUser }} 명/{{ totalUser }} 명 (78%) 완료</p>
+      <p class="status">{{ currentUser }} 명/{{ totalUser }} 명 ({{ Math.ceil(currentUser/totalUser) * 100 }}%) 완료</p>
       <div class="status-view"></div>
       <button class="show-answer" @click="showAnswer">정답 공개</button>
     </div>
