@@ -1,10 +1,14 @@
 const { defineConfig } = require('@vue/cli-service')
+
+let apiUrl = process.env.VUE_APP_API_URL || "http://localhost:3000"
+console.log("API URL: ", apiUrl)
+
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     proxy: {
       "/api": {
-        target: "http://localhost:3000"
+        target: apiUrl
       }
     },
     allowedHosts: "all"
