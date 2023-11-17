@@ -4,6 +4,7 @@ import WaitingRoom from "@/components/WaitingRoom.vue";
 import AdminPage from "@/components/AdminPage.vue";
 import QuizPage from "@/components/QuizPage.vue";
 import ResultPage from "@/components/ResultPage.vue";
+import EndPage from "@/components/EndPage.vue";
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: "/result", 
         name: "ResultPage",  
         component: ResultPage,  
+    },
+    {
+        path: "/end", 
+        name: "EndPage",  
+        component: EndPage,  
     },
 ];
 

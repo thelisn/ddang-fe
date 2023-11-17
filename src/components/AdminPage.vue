@@ -66,7 +66,7 @@
     </div>
 
     <div class="btn-container">
-      <button class="finish-btn">종료</button>
+      <button class="finish-btn" @click="finishBtn">종료</button>
       <button class="reset-btn">초기화</button>
     </div>
   </div>
@@ -78,6 +78,7 @@ import { onBeforeUnmount, onMounted, reactive, ref, getCurrentInstance } from "v
 import { getUserInfo, sortTeamMember } from '../utils/index';
 import LisnHeader from "./LisnHeader.vue";
 import axios from 'axios';
+import router from "@/router";
 
 
 
@@ -169,6 +170,13 @@ export default {
       });
     }
 
+    const finishBtn = () => {
+      if (confirm('정말 종료 하시겠습니까?')) {
+        socket.emit('show-end-winner');
+        router.push('/end');
+      }
+    }
+
     // Life Cycle
     onMounted(() => {
       userInfo.value = getUserInfo();
@@ -250,7 +258,8 @@ export default {
       isLoading,
       teamData,
       currentUser,
-      totalUser
+      totalUser,
+      finishBtn
     }
   }
 }

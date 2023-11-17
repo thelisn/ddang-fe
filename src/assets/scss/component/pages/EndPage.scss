@@ -1,11 +1,87 @@
 #end-page {
   position: relative;
   background-color: #111;
-  padding: 0 20px;
+  padding: 10px 20px 0;
+  height: fit-content;
 
   .end-container {
     margin-top: 58px;
     padding-bottom: 32px;
     
+    .end-message {
+      margin-bottom: 40px;
+    
+      .end-title {
+        font-size: 48px;
+        color: #fff;
+      }
+
+      .end-subtitle {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 15px 0 30px;
+        color: #1C77FF;
+      }
+    }
+
+    .winner-team-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+      padding: 10px 10px 10px 0;
+
+        .winner-team {
+          color: #fff;
+          font-size: 18px;
+          margin-right: 35px;
+        }
+
+        .winner {
+          position: absolute;
+          right: -20px;
+          color: #fff;
+          width: calc(100% - 50px);
+          font-size: 22px;
+          text-align: left;
+          padding: 12px 0px 13px 20px;
+          border-radius: 20px 0 0 20px;
+          margin-left: -20px;
+
+          .winners {
+            margin-right: 10px;
+          }
+        }
+      }
+
+      .loser-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 60px;
+  
+        .loser {
+          display: flex;
+          margin-top: 22px;
+          align-items: center;
+          margin-right: 12px;
+    
+    
+          .user-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 9px;
+          }
+    
+          .user-name {
+            height: max-content;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            padding-bottom: 3px;
+          }
+        }
+      }
+
+    }
   }
-}

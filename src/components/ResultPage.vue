@@ -88,12 +88,17 @@ export default {
 
         router.push('/quiz');
       });
+
+      socket.on('show-end-winner', (data) => {
+        router.push('/end');
+      })
     
     });
 
     onBeforeUnmount(() => {
       socket.off('check-answer');
       socket.off('start-quiz');
+      socket.off('show-end-winner');
     });
 
     return {
