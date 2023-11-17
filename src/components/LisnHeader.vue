@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <h1 class="quiz-header">
+    <h1 class="quiz-header" @click="clearLocalStorage">
       <img class="lisn-header" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </h1>
     <div class="user-area">
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import router from "@/router";
 import { getClass } from "@/utils/index"
 import { computed, onMounted, ref } from "vue";
 
@@ -23,7 +24,12 @@ export default {
     const isAdmin = ref(false);
 
     // 함수
-    
+    const clearLocalStorage = () => {
+      if (confirm('localstorage 삭제!!')) {
+        localStorage.clear();
+        router.push('/');
+      }
+    }
 
     // Life Cycle
     onMounted(() => {
@@ -35,7 +41,8 @@ export default {
     return {
       userName,
       getClass,
-      isAdmin
+      isAdmin,
+      clearLocalStorage
     }
   },
 }

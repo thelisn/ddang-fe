@@ -1,9 +1,7 @@
 <template>
   <div id="main-page" class="main-container">
-    <button @click="testFunc">Test Button</button>
-
     <div class="logo-wrap">
-      <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
+      <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" @click="clearLocalStorage" />
     </div>
 
     <div class="input-wrap">
@@ -63,6 +61,13 @@ export default {
 
     };
 
+    const clearLocalStorage = () => {
+      if (confirm('localstorage 삭제!!')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+    }
+
     const rejoin = () => {
       let userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -103,7 +108,8 @@ export default {
       input,
       isLoggedIn,
       rejoin,
-      testFunc
+      testFunc,
+      clearLocalStorage
     }
   },  
   data() {

@@ -167,6 +167,7 @@ export default {
         isLoading.value = false;
         teamData.value = sortTeamMember(userData.value);
         instance?.proxy?.$forceUpdate();
+        console.log(res.data)
       });
     }
 
