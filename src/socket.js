@@ -1,7 +1,8 @@
 export const  SOCKET_EVENT = {
   LOGIN: 'login',
-  START_QUIZ: 'start_quiz',
-  JOIN_QUIZ: 'join_quiz'
+  START_QUIZ: 'start-quiz',
+  JOIN_QUIZ: 'join-quiz',
+  SHOW_ANSWER: 'show-answer'
 }
 
 import { reactive } from "vue";
@@ -27,19 +28,3 @@ socket.on("connect", () => {
 socket.on("disconnect", () => {
   state.connected = false;
 });
-
-socket.on("login-error", () => {
-  state.loginError = true;
-});
-
-socket.on("login-success", (data) => {
-  state.loginError = false;
-  state.userName = data.id;
-
-  if (data.userType === 'admin') {
-    state.isAdmin = true;
-  } else {
-    state.isUser = true;
-  }
-});
-

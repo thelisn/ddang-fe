@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -19,7 +19,11 @@ export default {
     const userInfo = computed(() => store.state.userInfo)
     const teamInfo = (TeamId) => store.getters.teamInfo(TeamId)
 
-    const color = userInfo.value ? (userInfo.value.isAdmin ? '#EB1C1C' : teamInfo(userInfo.value.team).color) : null
+    const color = ref(null)
+
+    onMounted(() => {
+      color.value = userInfo.value ? (userInfo.value.isAdmin ? '#EB1C1C' : teamInfo(userInfo.value.team).color) : null
+    })
 
     return {
       color

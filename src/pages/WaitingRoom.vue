@@ -75,7 +75,7 @@ export default {
       })
 
       socket.on(SOCKET_EVENT.START_QUIZ, (data) => {
-        store.commit('setCurrentQuestion', data)
+        store.commit('setCurrentQuestion', data.id)
       })
 
       let localData = localStorage.getItem('userInfo')

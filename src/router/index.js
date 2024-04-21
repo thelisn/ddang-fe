@@ -3,7 +3,7 @@ import { createWebHistory, createRouter } from "vue-router"
 import LoginPage from "@/pages/LoginPage.vue"
 
 import WaitingRoom from "@/pages/WaitingRoom.vue";
-import AdminPage from "@/components/AdminPage.vue";
+import AdminPage from "@/pages/AdminPage.vue";
 import QuizPage from "@/components/QuizPage.vue";
 import ResultPage from "@/components/ResultPage.vue";
 
