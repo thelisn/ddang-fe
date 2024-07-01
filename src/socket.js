@@ -8,11 +8,11 @@ export const state = reactive({
   userName: null,
   isAdmin: false,
   fooEvents: [],
-  barEvents: []
+  barEvents: [],
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = "http://quiz.thelisn.com:3100";
+const URL = "http://localhost:3100";
 
 export const socket = io(URL);
 
@@ -21,7 +21,7 @@ socket.on("connect", () => {
 });
 
 socket.on("disconnect", () => {
-  state.connected = false;
+  state.connected = true;
 });
 
 socket.on("login-error", () => {
@@ -32,10 +32,9 @@ socket.on("login-success", (data) => {
   state.loginError = false;
   state.userName = data.id;
 
-  if (data.userType === 'admin') {
+  if (data.name === "admin") {
     state.isAdmin = true;
   } else {
     state.isUser = true;
   }
 });
-
