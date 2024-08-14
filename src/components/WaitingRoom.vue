@@ -14,28 +14,27 @@
       </li>
     </ul>
     <div class="btn-area" v-if="!isAdmin">
-      <button v-if="!currentQuestion" class="userBtn waiting" @click="joinQuiz">대기중</button>
-      <button v-if="currentQuestion" class="userBtn" @click="joinQuiz" :class="getClass()">입장</button>
+      <button class="userBtn" :disabled="!currentQuestion" :class="getClass()" @click="joinQuiz">
+        {{ currentQuestion ? "입장" : "대기중" }}
+      </button>
     </div>
 
     <div class="btn-area" v-if="isAdmin">
       <button class="userBtn" @click="joinAdminQuiz" :class="getClass()">Admin</button>
     </div>
-    <!-- <p>{{ name1 }}</p>
-    <input type="text" v-model="name1"> -->
-
   </div>
-
 </template>
 
 <script>
-import LisnHeader from "./LisnHeader.vue";
 import { state, socket } from "@/socket";
 import { useStore } from "vuex";
 import { getClass, getUserInfo } from "@/utils";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+
 import router from "@/router";
-import axios from 'axios';
+import axios from "axios";
+
+import LisnHeader from "./LisnHeader.vue";
 
 export default {
   name: "WaitingRoom",
@@ -48,33 +47,36 @@ export default {
     const currentQuestion = ref(null);
     const teamData = ref(null);
     const isAdmin = ref(null);
-    const checkHeight = ref(false);  
-    const isData = ref(false);                     
+    const checkHeight = ref(false);
+    const isData = ref(false);
     const userInfo = ref(null);
+
     // 함수
     const joinQuiz = () => {
+      if (!currentQuestion.value) return false;
+
       // 사번을 파라미터로 보낸다
-      socket.emit('join-quiz', userInfo.value);
-      router.push('/quiz');
-    }
+      socket.emit("join-quiz", userInfo.value);
+      router.push({ path: "/quiz", state: { isRouter: true } });
+    };
 
     const joinAdminQuiz = () => {
-      socket.emit('join-admin-quiz');
-      router.push('/admin');
-    }
+      socket.emit("join-admin-quiz");
+      router.push({ path: "/admin", state: { isRouter: true } });
+    };
 
     // Life Cycle
     onMounted(() => {
       userInfo.value = getUserInfo();
 
-      socket.on('login', (data) => {
+      socket.on("login", (data) => {
         currentQuestion.value = data.currentQuestion;
 
         let teams = {};
 
         data.teamData.forEach((person) => {
           const { team } = person;
-          
+
           if (!teams[team]) {
             teams[team] = [];
           }
@@ -84,14 +86,13 @@ export default {
         teamData.value = teams;
         isAdmin.value = data.userData.isAdmin;
         isData.value = true;
-        console.log(data)
       });
 
-      socket.on('start-quiz', (data) => {
+      socket.on("start-quiz", (data) => {
         currentQuestion.value = data;
       });
 
-      socket.on('rejoin', (data) => {
+      socket.on("rejoin", (data) => {
         currentQuestion.value = data.currentQuestion;
         let teams = {};
 
@@ -104,15 +105,15 @@ export default {
         });
 
         teamData.value = teams;
-      
-        isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
+
+        isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
       });
 
       setTimeout(async () => {
         if (!isData.value) {
-          await axios.get('/api/waiting').then(res => {
+          await axios.get("/api/waiting").then((res) => {
             isAdmin.value = userInfo.value.isAdmin;
-            
+
             if (res.data.currentQuestion) {
               currentQuestion.value = res.data.currentQuestion;
             }
@@ -127,7 +128,7 @@ export default {
 
               teams[team].push(person);
             });
-  
+
             teamData.value = teams;
           });
         }
@@ -135,9 +136,9 @@ export default {
     });
 
     onBeforeUnmount(() => {
-      socket.off('login');
-      socket.off('start-quiz');
-      socket.off('rejoin');
+      socket.off("login");
+      socket.off("start-quiz");
+      socket.off("rejoin");
     });
 
     return {
@@ -148,10 +149,9 @@ export default {
       teamData,
       isAdmin,
       checkHeight,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
-<style lang="scss" scoped src="@/assets/scss/component/pages/WaitingRoom.scss">
-</style>
+<style lang="scss" scoped src="@/assets/scss/component/pages/WaitingRoom.scss"></style>

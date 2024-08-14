@@ -16,7 +16,7 @@
         <span class="answer-number">{{ correctAnswerData.number }}</span>
         <button class="selected-text">{{ correctAnswerData.text }}</button>
       </div>
-      
+
       <ul class="user-wrap">
         <li class="correct-answer-user" v-for="(user, idx) in correctUserData" :key="idx">
           <div class="user-status" :class="getClass(user.team)"></div>
@@ -39,12 +39,12 @@ import { state, socket } from "@/socket";
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { getUserInfo, getClass } from "@/utils";
-import LisnHeader from "@/components/LisnHeader.vue"
+import LisnHeader from "@/components/LisnHeader.vue";
 
 export default {
-  name: 'QuizPage',
+  name: "QuizPage",
   components: {
-    LisnHeader
+    LisnHeader,
   },
   setup() {
     // 변수
@@ -57,48 +57,43 @@ export default {
     const correctAnswer = ref(null);
     const isLoading = ref(true);
 
-
     // 함수
-
 
     // Life Cycle
     onMounted(() => {
       userInfo.value = getUserInfo();
 
-      socket.on('check-answer', (data) => {
+      socket.on("check-answer", (data) => {
         if (data.isCorrect === true) {
           checkAnswer.value = true;
         } else {
           checkAnswer.value = false;
         }
-        console.log(data)
 
         correctUserData.value = data.correctUserData;
         questionData.value = data.questionData;
         correctAnswer.value = data.correctAnswer;
         answerData.value = data.answerData.filter((data) => data.number !== correctAnswer.value);
         correctAnswerData.value = data.answerData.filter((data) => data.number === correctAnswer.value)[0];
-        console.log(correctAnswerData.value)
         isLoading.value = false;
       });
 
-      socket.on('start-quiz', (data) => {
+      socket.on("start-quiz", (data) => {
         // 사번을 파라미터로 보낸다
-        socket.emit('join-quiz', userInfo.value);
+        socket.emit("join-quiz", userInfo.value);
 
-        router.push('/quiz');
+        router.push({ path: "/quiz", state: { isRouter: true } });
       });
 
-      socket.on('show-end-winner', (data) => {
-        router.push('/end');
-      })
-    
+      socket.on("show-end-winner", (data) => {
+        router.push("/end");
+      });
     });
 
     onBeforeUnmount(() => {
-      socket.off('check-answer');
-      socket.off('start-quiz');
-      socket.off('show-end-winner');
+      socket.off("check-answer");
+      socket.off("start-quiz");
+      socket.off("show-end-winner");
     });
 
     return {
@@ -109,10 +104,9 @@ export default {
       correctUserData,
       questionData,
       correctAnswerData,
-      isLoading
-
-    }
-  }
-}
+      isLoading,
+    };
+  },
+};
 </script>
 <style scoped lang="scss" src="@/assets/scss/component/pages/resultPage.scss"></style>

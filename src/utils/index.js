@@ -8,7 +8,7 @@ export const getClass = (data) => {
   else teamKey = data;
 
   const team = {
-    양재: "yangae",
+    양재: "yangjae",
     디채: "dichae",
     모니모: "monimo",
     스포크: "spoke",

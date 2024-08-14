@@ -1,13 +1,19 @@
 <template>
   <div id="main-page" class="main-container">
     <div class="logo-wrap">
-      <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" @click="clearLocalStorage" />
+      <img
+        class="lisn"
+        src="@/assets/images/lisn.svg"
+        alt="LISN logo"
+        aria-hidden="true"
+        @click="handleClearLocalStorage"
+      />
     </div>
 
     <form @submit.prevent="">
       <div class="input-wrap">
         <input id="lisn-input" type="text" v-model="input" name="id" :disabled="isLoggedIn" />
-        <label for="lisn-input" class="input-label">사번 or 이름</label>
+        <label for="lisn-input" class="input-label">이름</label>
       </div>
 
       <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
@@ -36,6 +42,7 @@ const store = useStore();
 onMounted(() => {
   isLoggedIn.value = !!localStorage.getItem("userInfo");
 
+  //@NOTE 로그인 후 다시 메인으로 왔을 경우 waiting으로 보낼지 리조인 만들지 수정 필요.
   socket.on("login", (data) => {
     if (data.error === true) {
       alert(data.msg);
@@ -58,32 +65,20 @@ const rejoin = () => {
   let userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   socket.emit("rejoin", userInfo);
-  router.push("/waiting");
+  router.push({ path: "/waiting", state: { isRouter: true } });
 };
 
-// const clearLocalStorage = () => {
-//   if (confirm("localstorage 삭제!!")) {
-//     localStorage.clear();
-//     window.location.reload();
-//   }
-// };
+const setLocalStorage = (userInfoData) => {
+  const hasLocalData = localStorage.getItem("userInfo");
 
-const setLocalStorage = (data) => {
-  let localData = localStorage.getItem("userInfo");
+  if (!hasLocalData) localStorage.setItem("userInfo", JSON.stringify(userInfoData));
 
-  if (!localData) {
-    localStorage.setItem(
-      "userInfo",
-      JSON.stringify({
-        id: data.id,
-        name: data.name,
-        einumber: data.einumber,
-        teamName: data.team,
-        isAdmin: data.isAdmin,
-      })
-    );
-  }
-  router.push("/waiting");
+  router.push({ path: "/waiting", state: { isRouter: true } });
+};
+
+const handleClearLocalStorage = () => {
+  clearLocalStorage();
+  window.location.reload();
 };
 </script>
 
