@@ -32,7 +32,28 @@
     .status-view {
       margin-top: 16px;
       height: 76px;
-      background-color: #fff;
+
+      .enter-user-area {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        & > ul {
+          display: flex;
+          gap: 4px;
+
+          li .circle {
+            width: 16px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+
+            &.blank {
+              background-color: transparent;
+              border: 1px solid currentColor;
+            }
+          }
+        }
+      }
     }
 
     .show-answer {
