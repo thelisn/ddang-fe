@@ -69,7 +69,6 @@ onMounted(() => {
   userInfo.value = getUserInfo();
 
   socket.on("join-quiz", (data) => {
-    console.log(data);
     answers.value = data.answers;
     question.value = data.question;
     questionNumber.value = data.number;

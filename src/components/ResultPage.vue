@@ -60,6 +60,7 @@ export default {
     // 함수
 
     // Life Cycle
+    // @NOTE 선택지에 맞게끔 사람 인원수 보여주기 작업중.
     onMounted(() => {
       userInfo.value = getUserInfo();
 
@@ -81,12 +82,11 @@ export default {
       socket.on("start-quiz", (data) => {
         // 사번을 파라미터로 보낸다
         socket.emit("join-quiz", userInfo.value);
-
         router.push({ path: "/quiz", state: { isRouter: true } });
       });
 
       socket.on("show-end-winner", (data) => {
-        router.push("/end");
+        router.push({ path: "/end", state: { isRouter: true } });
       });
     });
 
