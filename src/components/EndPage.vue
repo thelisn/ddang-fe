@@ -8,23 +8,31 @@
       </div>
       <template v-if="winnerData">
         <div class="winner-team-box" v-if="teamWinnerData('양재').length > 0">
-          <span class="winner-team">양재</span>                                       
-          <button class="winner yangjae"><span class="winners" v-for="(item, idx) in teamWinnerData('양재')" :key="idx">{{ item.name }}</span></button>
+          <span class="winner-team">양재</span>
+          <button class="winner yangjae">
+            <span class="winners" v-for="(item, idx) in teamWinnerData('양재')" :key="idx">{{ item.name }}</span>
+          </button>
         </div>
-        
+
         <div class="winner-team-box" v-if="teamWinnerData('스포크').length > 0">
           <span class="winner-team">스포크</span>
-          <button class="winner spoke"><span class="winners" v-for="(item, idx) in teamWinnerData('스포크')" :key="idx">{{ item.name }}</span></button>
+          <button class="winner spoke">
+            <span class="winners" v-for="(item, idx) in teamWinnerData('스포크')" :key="idx">{{ item.name }}</span>
+          </button>
         </div>
-        
+
         <div class="winner-team-box" v-if="teamWinnerData('디채').length > 0">
           <span class="winner-team">디채</span>
-          <button class="winner dichae"><span class="winners" v-for="(item, idx) in teamWinnerData('디채')" :key="idx">{{ item.name }}</span></button>
+          <button class="winner dichae">
+            <span class="winners" v-for="(item, idx) in teamWinnerData('디채')" :key="idx">{{ item.name }}</span>
+          </button>
         </div>
-        
+
         <div class="winner-team-box" v-if="teamWinnerData('모니모').length > 0">
           <span class="winner-team">모니모</span>
-          <button class="winner monimo"><span class="winners" v-for="(item, idx) in teamWinnerData('모니모')" :key="idx">{{ item.name }}</span></button>
+          <button class="winner monimo">
+            <span class="winners" v-for="(item, idx) in teamWinnerData('모니모')" :key="idx">{{ item.name }}</span>
+          </button>
         </div>
       </template>
 
@@ -39,18 +47,17 @@
 </template>
 
 <script>
-// import { state, socket } from "@/socket";
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from "vue";
-import { getUserInfo, getClass } from "@/utils";
-import axios from 'axios';
-import LisnHeader from "@/components/LisnHeader.vue"
+import { getClass } from "@/utils";
+import axios from "axios";
+import LisnHeader from "@/components/LisnHeader.vue";
 import { socket } from "@/socket";
 
 export default {
-  name: 'QuizPage',
+  name: "QuizPage",
   components: {
-    LisnHeader
+    LisnHeader,
   },
   setup() {
     // 변수
@@ -62,26 +69,29 @@ export default {
 
     // 함수
     const updatePage = async () => {
-      await axios.get('/api/admin').then(res => {
+      await axios.get("/api/admin").then((res) => {
         isAliveData.value = res.data.userData.filter((item) => item.isAlive === false);
         winnerData.value = res.data.userData.filter((item) => item.isAlive === true);
         instance?.proxy?.$forceUpdate();
       });
-    }
+    };
 
     const teamWinnerData = (teamName) => {
-      return winnerData.value.filter(item => item.teamName === teamName)
-    }
+      return winnerData.value.filter((item) => item.teamName === teamName);
+    };
 
     // Life Cycle
     onMounted(() => {
-      socket.on('show-end-winner', (data) => {
-        console.log(data);
+      socket.on("show-end-winner", (data) => {
         userData.value = data.userData;
         isAliveData.value = data.userData.filter((item) => item.isAlive === false);
         winnerData.value = data.userData.filter((item) => item.isAlive === true);
         isData.value = true;
-      })
+      });
+
+      socket.on("re-start-quiz", () => {
+        router.push({ path: "/waiting", state: { isRouter: true } });
+      });
 
       // 새로고침 시 실행
       setTimeout(async () => {
@@ -92,7 +102,8 @@ export default {
     });
 
     onBeforeUnmount(() => {
-      socket.off('show-end-winner');
+      socket.off("show-end-winner");
+      socket.off("re-start-quiz");
     });
 
     return {
@@ -100,9 +111,9 @@ export default {
       isAliveData,
       winnerData,
       teamWinnerData,
-      userData
-    }
-  }
-}
+      userData,
+    };
+  },
+};
 </script>
 <style scoped lang="scss" src="@/assets/scss/component/pages/EndPage.scss"></style>
