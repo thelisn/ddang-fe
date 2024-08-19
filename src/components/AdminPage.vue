@@ -10,7 +10,9 @@
 
     <div v-if="currentQuestion" class="answer-container">
       <p class="status">
-        {{ currentUser }} 명/{{ totalUser }} 명 ({{ Math.ceil(currentUser / totalUser) * 100 }}%) 완료
+        {{ currentUser }} 명/{{ totalUser }} 명 ({{
+          Number.isNaN(Math.ceil(currentUser / totalUser) * 100) ? 0 : Math.ceil(currentUser / totalUser) * 100
+        }}%) 완료
       </p>
       <div class="status-view">
         <div class="enter-user-area">
@@ -171,9 +173,11 @@ const startQuiz = async (question) => {
 };
 
 const restartQuiz = () => {
-  socket.emit("re-start-quiz");
-  isEnd.value = false;
-  updatePage();
+  if (confirm("정말 재시작 하시겠습니까?")) {
+    socket.emit("re-start-quiz");
+    isEnd.value = false;
+    updatePage();
+  }
 };
 
 const questionStatus = (data) => {

@@ -1,6 +1,7 @@
 <template>
   <div id="end-page">
     <LisnHeader />
+
     <section class="end-container">
       <div class="end-message">
         <h3 class="end-title">결과 발표</h3>
@@ -46,7 +47,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from "vue";
 import { getClass } from "@/utils";
@@ -54,66 +55,48 @@ import axios from "axios";
 import LisnHeader from "@/components/LisnHeader.vue";
 import { socket } from "@/socket";
 
-export default {
-  name: "QuizPage",
-  components: {
-    LisnHeader,
-  },
-  setup() {
-    // 변수
-    const isAliveData = ref(null);
-    const winnerData = ref(null);
-    const userData = ref(null);
-    const isData = ref(false);
-    const instance = getCurrentInstance();
+// 변수
+const isAliveData = ref(null);
+const winnerData = ref(null);
+const isData = ref(false);
+const instance = getCurrentInstance();
 
-    // 함수
-    const updatePage = async () => {
-      await axios.get("/api/admin").then((res) => {
-        isAliveData.value = res.data.userData.filter((item) => item.isAlive === false);
-        winnerData.value = res.data.userData.filter((item) => item.isAlive === true);
-        instance?.proxy?.$forceUpdate();
-      });
-    };
-
-    const teamWinnerData = (teamName) => {
-      return winnerData.value.filter((item) => item.teamName === teamName);
-    };
-
-    // Life Cycle
-    onMounted(() => {
-      socket.on("show-end-winner", (data) => {
-        userData.value = data.userData;
-        isAliveData.value = data.userData.filter((item) => item.isAlive === false);
-        winnerData.value = data.userData.filter((item) => item.isAlive === true);
-        isData.value = true;
-      });
-
-      socket.on("re-start-quiz", () => {
-        router.push({ path: "/waiting", state: { isRouter: true } });
-      });
-
-      // 새로고침 시 실행
-      setTimeout(async () => {
-        if (!isData.value) {
-          updatePage();
-        }
-      }, 500);
-    });
-
-    onBeforeUnmount(() => {
-      socket.off("show-end-winner");
-      socket.off("re-start-quiz");
-    });
-
-    return {
-      getClass,
-      isAliveData,
-      winnerData,
-      teamWinnerData,
-      userData,
-    };
-  },
+// 함수
+const updatePage = async () => {
+  await axios.get("/api/admin").then((res) => {
+    isAliveData.value = res.data.userData.filter((item) => item.isAlive === "dead");
+    winnerData.value = res.data.userData.filter((item) => item.isAlive === null);
+    instance?.proxy?.$forceUpdate();
+  });
 };
+
+const teamWinnerData = (teamName) => {
+  return winnerData.value.filter((item) => item.teamName === teamName);
+};
+
+// Life Cycle
+onMounted(() => {
+  if (history.state?.userData) {
+    isAliveData.value = history.state.userData.filter((item) => item.isAlive === "dead");
+    winnerData.value = history.state.userData.filter((item) => item.isAlive === null);
+    isData.value = true;
+  }
+
+  socket.on("re-start-quiz", () => {
+    router.push({ path: "/waiting", state: { isRouter: true } });
+  });
+
+  // 새로고침 시 실행
+  setTimeout(async () => {
+    if (!isData.value) {
+      updatePage();
+    }
+  }, 500);
+});
+
+onBeforeUnmount(() => {
+  socket.off("show-end-winner");
+  socket.off("re-start-quiz");
+});
 </script>
 <style scoped lang="scss" src="@/assets/scss/component/pages/EndPage.scss"></style>
