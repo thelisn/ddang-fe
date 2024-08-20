@@ -36,4 +36,13 @@ const router = createRouter({
   ],
 });
 
+router.beforeEach((to, from, next) => {
+  const isNotRouter = !history.state?.isRouter;
+  const nonUserInfo = !localStorage.getItem('userInfo');
+  const isNotMain = to.path !== '/';
+
+  if (isNotRouter && nonUserInfo && isNotMain) next('/');
+  else next();
+});
+
 export default router;

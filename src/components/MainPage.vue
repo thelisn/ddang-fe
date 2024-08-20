@@ -1,138 +1,85 @@
 <template>
   <div id="main-page" class="main-container">
     <div class="logo-wrap">
-      <img class="lisn" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" @click="clearLocalStorage" />
+      <img
+        class="lisn"
+        src="@/assets/images/lisn.svg"
+        alt="LISN logo"
+        aria-hidden="true"
+        @click="handleClearLocalStorage"
+      />
     </div>
 
-    <div class="input-wrap">
-      <input id="lisn-input" type="text" v-model="input" name="id" :disabled="isLoggedIn" />
-      <label for="lisn-input" class="input-label">사번 or 이름</label>
-    </div>
+    <form @submit.prevent="">
+      <div class="input-wrap">
+        <input id="lisn-input" type="text" v-model="input" name="id" :disabled="isLoggedIn" />
+        <label for="lisn-input" class="input-label">이름</label>
+      </div>
 
-    <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
-    <button v-else class="login-btn" @click="rejoin">재입장하기</button>
+      <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
+      <button v-else class="login-btn" @click="rejoin">재입장하기</button>
+    </form>
   </div>
 </template>
 
-<script>
-import { state, socket } from "@/socket";
-import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref, onBeforeUnmount, computed } from "vue";
+<script setup>
+import { onMounted, ref, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
-import axios from 'axios';
+import { useRouter } from "vue-router";
+import { socket } from "@/socket";
+import { clearLocalStorage } from "@/utils/index";
 
+// 변수 정의
+const input = ref("");
+const isLoggedIn = ref(false);
 
-export default {
-  name: "MainPage",
-  setup() {
-    // 변수 정의
-    const router = useRouter();
-    const route = useRoute();
-    const input = ref("");
-    const store = useStore();
-    const isLoggedIn = ref(false);
-    // const test = computed(() => store.state.name);
+const router = useRouter();
+const store = useStore();
 
-    // 함수 정의
-    const testFunc = () => {
-      socket.emit('test', {
-        number: 3,
-        correctAnswer: 2
-      });
+// 함수 정의
+
+// Life Cycle
+onMounted(() => {
+  isLoggedIn.value = !!localStorage.getItem("userInfo");
+
+  //@NOTE 로그인 후 다시 메인으로 왔을 경우 waiting으로 보낼지 리조인 만들지 수정 필요.
+  socket.on("login", (data) => {
+    if (data.error === true) {
+      alert(data.msg);
+    } else {
+      setLocalStorage(data.userData);
+      store.commit("setUserInfo", data.userData);
     }
-    const login = () => {
-      socket.emit('login', input.value.toUpperCase());
-    };
+  });
+});
 
-    const setLocalStorage = (data) => {
-      let localData = localStorage.getItem('userInfo');
+onBeforeUnmount(() => {
+  socket.off("login");
+});
 
-      if (!localData) { 
-        localStorage.setItem('userInfo', JSON.stringify({
-          id: data.id,
-          name: data.name,
-          einumber: data.einumber,
-          teamName: data.team,
-          isAdmin: data.isAdmin
-        }));
-      }
-      router.push('/waiting');
+const login = () => {
+  socket.emit("login", input.value.toUpperCase());
+};
 
+const rejoin = () => {
+  let userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-    };
+  socket.emit("rejoin", userInfo);
+  router.push({ path: "/waiting", state: { isRouter: true } });
+};
 
-    const clearLocalStorage = () => {
-      if (confirm('localstorage 삭제!!')) {
-        localStorage.clear();
-        window.location.reload();
-      }
-    }
+const setLocalStorage = (userInfoData) => {
+  const hasLocalData = localStorage.getItem("userInfo");
 
-    const rejoin = () => {
-      let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  if (!hasLocalData) localStorage.setItem("userInfo", JSON.stringify(userInfoData));
 
-      socket.emit('rejoin', userInfo);
-      router.push('/waiting');
-    };
+  router.push({ path: "/waiting", state: { isRouter: true } });
+};
 
-    
-
-    // Life Cycle
-    onMounted(() => {
-      let localData = localStorage.getItem('userInfo');
-
-      if (localData) {
-        isLoggedIn.value = true;
-      } else {
-        isLoggedIn.value = false;
-      }
-      
-
-      socket.on('login', (data) => {
-        if (data.error === true) {
-          alert(data.msg)
-        } else {
-          setLocalStorage(data.userData);
-          store.commit("setUserInfo", data.userData);
-        }
-      });
-    });
-
-    onBeforeUnmount(() => {
-      socket.off('login');
-    });
-
-
-    return {
-      login,
-      input,
-      isLoggedIn,
-      rejoin,
-      testFunc,
-      clearLocalStorage
-    }
-  },  
-  data() {
-    return {
-      errMsg: null
-    }
-  },
-  computed: {
-    connected() {
-      return state.connected;
-    },
-    isUser() {
-      return state.isUser;
-    },
-    isAdmin() {
-      return state.isAdmin;
-    },
-    allUsers() {
-      return state.allUsers;
-    },
-  }
-}
+const handleClearLocalStorage = () => {
+  clearLocalStorage();
+  window.location.reload();
+};
 </script>
 
-<style lang="scss" scoped src="@/assets/scss/component/pages/MainPage.scss">
-</style>
+<style lang="scss" scoped src="@/assets/scss/component/pages/MainPage.scss"></style>

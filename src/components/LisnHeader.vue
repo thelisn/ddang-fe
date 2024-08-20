@@ -18,7 +18,7 @@
 
 <script setup>
 import router from '@/router';
-import { getClass } from '@/utils/index';
+import { getClass, clearLocalStorage } from '@/utils/index';
 import { computed, onMounted, ref } from 'vue';
 
 // 변수

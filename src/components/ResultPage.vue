@@ -16,103 +16,92 @@
         <span class="answer-number">{{ correctAnswerData.number }}</span>
         <button class="selected-text">{{ correctAnswerData.text }}</button>
       </div>
-      
+
       <ul class="user-wrap">
-        <li class="correct-answer-user" v-for="(user, idx) in correctUserData" :key="idx">
+        <li class="correct-answer-user" v-for="(user, idx) in correctAnswerData.userData" :key="idx">
           <div class="user-status" :class="getClass(user.team)"></div>
           <p class="user-name">{{ user.name }}</p>
         </li>
       </ul>
 
       <div class="wrong-answer-wrap">
-        <div class="wrong-answer" v-for="(answer, idx) in answerData" :key="idx">
+        <div
+          v-for="(answer, idx) in answerData"
+          class="wrong-answer"
+          :class="userAnswer === answer.number && 'is-select'"
+          :key="idx"
+        >
           <div class="wrong-number">{{ answer.number }}</div>
           <button class="wrong-text">{{ answer.text }}</button>
+
+          <div v-if="Object.keys(answer.userData).length" class="user-state-wrap">
+            <ul v-for="(users, key, index) of answer.userData" :key="`users-${index}`">
+              <li v-for="(_, userIndex) of users" :key="`user-${userIndex}`">
+                <div class="circle" :class="getClass(key)" />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
   </div>
 </template>
 
-<script>
-import { state, socket } from "@/socket";
+<script setup>
+import { socket } from "@/socket";
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { getUserInfo, getClass } from "@/utils";
-import LisnHeader from "@/components/LisnHeader.vue"
+import LisnHeader from "@/components/LisnHeader.vue";
 
-export default {
-  name: 'QuizPage',
-  components: {
-    LisnHeader
-  },
-  setup() {
-    // 변수
-    let checkAnswer = ref(null);
-    const userInfo = ref(null);
-    const answerData = ref(null);
-    const correctAnswerData = ref(null);
-    const correctUserData = ref(null);
-    const questionData = ref(null);
-    const correctAnswer = ref(null);
-    const isLoading = ref(true);
+// 변수
+let checkAnswer = ref(null);
+const userInfo = ref(null);
+const questionData = ref(null);
+const answerData = ref(null);
+const correctAnswerData = ref(null);
+const userAnswer = ref(null);
+const isLoading = ref(true);
 
+// 함수
 
-    // 함수
+// Life Cycle
+onMounted(() => {
+  userInfo.value = getUserInfo();
 
-
-    // Life Cycle
-    onMounted(() => {
-      userInfo.value = getUserInfo();
-
-      socket.on('check-answer', (data) => {
-        if (data.isCorrect === true) {
-          checkAnswer.value = true;
-        } else {
-          checkAnswer.value = false;
-        }
-        console.log(data)
-
-        correctUserData.value = data.correctUserData;
-        questionData.value = data.questionData;
-        correctAnswer.value = data.correctAnswer;
-        answerData.value = data.answerData.filter((data) => data.number !== correctAnswer.value);
-        correctAnswerData.value = data.answerData.filter((data) => data.number === correctAnswer.value)[0];
-        console.log(correctAnswerData.value)
-        isLoading.value = false;
+  socket.on("check-answer", (data) => {
+    questionData.value = data.questionData;
+    answerData.value = data.answerData
+      .filter((v) => v.number !== data.correctAnswer)
+      .map((v) => {
+        return {
+          ...v,
+          userData: Object.groupBy(v.userData, ({ team }) => team),
+        };
       });
 
-      socket.on('start-quiz', (data) => {
-        // 사번을 파라미터로 보낸다
-        socket.emit('join-quiz', userInfo.value);
+    correctAnswerData.value = data.answerData.filter((v) => v.number === data.correctAnswer)[0];
+    userAnswer.value = data.userAnswer;
+    checkAnswer.value = data.isCorrect;
 
-        router.push('/quiz');
-      });
+    isLoading.value = false;
+  });
 
-      socket.on('show-end-winner', (data) => {
-        router.push('/end');
-      })
-    
-    });
+  socket.on("start-quiz", (data) => {
+    // 사번을 파라미터로 보낸다
+    socket.emit("join-quiz", userInfo.value);
+    router.push({ path: "/quiz", state: { isRouter: true } });
+  });
 
-    onBeforeUnmount(() => {
-      socket.off('check-answer');
-      socket.off('start-quiz');
-      socket.off('show-end-winner');
-    });
+  socket.on("show-end-winner", (data) => {
+    router.push({ path: "/end", state: { isRouter: true, userData: data.userData } });
+  });
+});
 
-    return {
-      getClass,
-      checkAnswer,
-      correctAnswer,
-      answerData,
-      correctUserData,
-      questionData,
-      correctAnswerData,
-      isLoading
-
-    }
-  }
-}
+onBeforeUnmount(() => {
+  socket.off("check-answer");
+  socket.off("start-quiz");
+  socket.off("show-end-winner");
+});
 </script>
 <style scoped lang="scss" src="@/assets/scss/component/pages/resultPage.scss"></style>
