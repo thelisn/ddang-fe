@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { state, socket } from "@/socket";
+import { socket } from "@/socket";
 import { getClass } from "@/utils";
 import router from "@/router";
 import { onBeforeUnmount, onMounted, ref } from "vue";
