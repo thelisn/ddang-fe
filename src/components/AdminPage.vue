@@ -33,8 +33,8 @@
           <p class="result">
             {{ question.isFinished ? question.question : question.isStarted ? "진행중" : question.question }}
           </p>
-          <button class="question-btn" @click="question.isStarted ? restartQuiz : startQuiz(question)">
-            {{ question.isStarted ? "재진행" : "시작" }}
+          <button class="question-btn" :disabled="isEnd || question.isStarted" @click="startQuiz(question)">
+            {{ isEnd ? "종료" : question.isStarted ? "재진행" : "시작" }}
           </button>
         </li>
       </ul>
@@ -138,6 +138,7 @@ const userAnswerInfo = ref({});
 const isEnd = ref(false);
 const instance = getCurrentInstance();
 
+// @NOTE 다음 번호는 못누르게 막아야함.
 // 함수
 const showAnswer = async () => {
   // 채점하고자 하는 문제 번호 파라미터로 전송
@@ -145,8 +146,9 @@ const showAnswer = async () => {
     userInfo: userInfo.value,
     currentQuestion,
   });
-  updatePage();
+
   currentQuestion.value = null;
+  currentQuestionData.value = null;
 };
 
 const revive = (data) => {
@@ -158,6 +160,8 @@ const revive = (data) => {
 };
 
 const startQuiz = async (question) => {
+  if (question.isStarted || isEnd.value) return false;
+
   currentQuestion.value = question.number;
 
   // 시작하고자 하는 퀴즈 번호 파라미터로 전송
@@ -169,15 +173,8 @@ const startQuiz = async (question) => {
   await axios.get("/api/admin").then((res) => {
     questionData.value = res.data.questionData;
     userData.value = res.data.userData;
+    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
   });
-};
-
-const restartQuiz = () => {
-  if (confirm("정말 재시작 하시겠습니까?")) {
-    socket.emit("re-start-quiz");
-    isEnd.value = false;
-    updatePage();
-  }
 };
 
 const questionStatus = (data) => {
@@ -211,8 +208,24 @@ const updatePage = async () => {
 
 const finishBtn = () => {
   if (confirm("정말 종료 하시겠습니까?")) {
-    socket.emit("show-end-winner", () => {
+    socket.emit("show-end-winner", (data) => {
       isEnd.value = true;
+
+      questionData.value = data.questionData;
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
+    });
+  }
+};
+
+const restartQuiz = async () => {
+  if (confirm("정말 재시작 하시겠습니까?")) {
+    socket.emit("re-start-quiz", () => {
+      isEnd.value = false;
+
+      updatePage();
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
     });
   }
 };
