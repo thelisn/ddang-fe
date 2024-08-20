@@ -1,7 +1,12 @@
 <template>
   <div class="header">
     <h1 class="quiz-header" @click="clearLocalStorage">
-      <img class="lisn-header" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
+      <img
+        class="lisn-header"
+        src="@/assets/images/lisn.svg"
+        alt="LISN logo"
+        aria-hidden="true"
+      />
     </h1>
     <div class="user-area">
       <div v-if="isAdmin" class="admin-status">ADMIN</div>
@@ -11,42 +16,75 @@
   </div>
 </template>
 
-<script>
-import router from "@/router";
-import { getClass } from "@/utils/index"
-import { computed, onMounted, ref } from "vue";
+<script setup>
+import router from '@/router';
+import { getClass } from '@/utils/index';
+import { computed, onMounted, ref } from 'vue';
 
-export default {
-  name: "LisnHeader",
-  setup() {
-    // 변수
-    const userName = ref(null);
-    const isAdmin = ref(false);
+// 변수
+const userName = ref(null);
+const isAdmin = ref(false);
 
-    // 함수
-    const clearLocalStorage = () => {
-      if (confirm('localstorage 삭제!!')) {
-        localStorage.clear();
-        router.push('/');
-      }
-    }
+// 함수
+const clearLocalStorage = () => {
+  if (confirm('localstorage 삭제!!')) {
+    localStorage.clear();
+    router.push('/');
+  }
+};
 
-    // Life Cycle
-    onMounted(() => {
-      userName.value = JSON.parse(localStorage.getItem('userInfo')).name;
-      isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
-    });
-
-
-    return {
-      userName,
-      getClass,
-      isAdmin,
-      clearLocalStorage
-    }
-  },
-}
+// Life Cycle
+onMounted(() => {
+  userName.value = JSON.parse(localStorage.getItem('userInfo')).name;
+  isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
+});
 </script>
 
-<style lang="scss" scoped src="@/assets/scss/component/LisnHeader.scss">
+<style lang="scss" scoped>
+.header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  background-color: #111;
+  padding: 20px 20px 13px;
+  z-index: 1000;
+
+  .quiz-header {
+    .lisn-header {
+      height: 24px;
+    }
+  }
+
+  .user-area {
+    display: flex;
+    align-items: center;
+    color: #fff;
+
+    .user-status {
+      margin-right: 9px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .admin-status {
+      padding: 2px 6px 3px;
+      background-color: #eb1c1c;
+      border-radius: 20px;
+      color: #111;
+      font-weight: 500;
+      font-size: 13px;
+      margin-right: 9px;
+    }
+
+    .user-name {
+      font-size: 22px;
+      font-weight: 500;
+      padding-bottom: 2px;
+    }
+  }
+}
 </style>

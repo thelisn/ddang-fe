@@ -1,5 +1,5 @@
-import { reactive } from "vue";
-import { io } from "socket.io-client";
+import { reactive } from 'vue';
+import { io } from 'socket.io-client';
 
 export const state = reactive({
   connected: false,
@@ -8,27 +8,27 @@ export const state = reactive({
   userName: null,
   isAdmin: false,
   fooEvents: [],
-  barEvents: []
+  barEvents: [],
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = "http://quiz.thelisn.com:3100";
+const URL = 'http://localhost:3100';
 
 export const socket = io(URL);
 
-socket.on("connect", () => {
+socket.on('connect', () => {
   state.connected = true;
 });
 
-socket.on("disconnect", () => {
+socket.on('disconnect', () => {
   state.connected = false;
 });
 
-socket.on("login-error", () => {
+socket.on('login-error', () => {
   state.loginError = true;
 });
 
-socket.on("login-success", (data) => {
+socket.on('login-success', (data) => {
   state.loginError = false;
   state.userName = data.id;
 
@@ -38,4 +38,3 @@ socket.on("login-success", (data) => {
     state.isUser = true;
   }
 });
-

@@ -1,47 +1,39 @@
-import { createWebHistory, createRouter } from "vue-router";
-import MainPage from "@/components/MainPage.vue";
-import WaitingRoom from "@/components/WaitingRoom.vue";
-import AdminPage from "@/components/AdminPage.vue";
-import QuizPage from "@/components/QuizPage.vue";
-import ResultPage from "@/components/ResultPage.vue";
-import EndPage from "@/components/EndPage.vue";
-
-const routes = [
-    {
-        path: "/",
-        name: "MainPage",
-        component: MainPage,
-    },
-    {
-        path: "/waiting", 
-        name: "WatingRoom",  
-        component: WaitingRoom,  
-    },
-    {
-        path: "/admin", 
-        name: "AdminPage",  
-        component: AdminPage,  
-    },
-    {
-        path: "/quiz", 
-        name: "QuizPage",  
-        component: QuizPage,  
-    },
-    {
-        path: "/result", 
-        name: "ResultPage",  
-        component: ResultPage,  
-    },
-    {
-        path: "/end", 
-        name: "EndPage",  
-        component: EndPage,  
-    },
-];
+import { createWebHistory, createRouter } from 'vue-router';
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'MainView',
+      component: () => import('@/views/MainView.vue'),
+    },
+    {
+      path: '/waiting',
+      name: 'WatingRoom',
+      component: () => import('@/views/WaitingView.vue'),
+    },
+    {
+      path: '/admin',
+      name: 'AdminPage',
+      component: () => import('@/views/AdminView.vue'),
+    },
+    {
+      path: '/quiz',
+      name: 'QuizPage',
+      component: () => import('@/views/QuizView.vue'),
+    },
+    {
+      path: '/result',
+      name: 'ResultPage',
+      component: () => import('@/views/ResultView.vue'),
+    },
+    {
+      path: '/end',
+      name: 'EndPage',
+      component: () => import('@/views/EndView.vue'),
+    },
+  ],
 });
 
 export default router;
