@@ -1,17 +1,13 @@
 <template>
-  <!-- <div class="btn-container">
-    <button class="finish-btn" @click="$emit('finish')">종료</button>
-    <button class="reset-btn" @click="$emit('reset')">초기화</button>
-  </div> -->
   <div class="btn-container">
     <button class="finish-btn" @click="handleClick">
-      {{ isEnd ? '재시작' : '종료' }}
+      {{ isEnd ? "재시작" : "종료" }}
     </button>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from 'vue';
+import { defineEmits, defineProps } from "vue";
 
 const props = defineProps({
   isEnd: {
@@ -20,13 +16,13 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(['finish', 'restart']);
+const emits = defineEmits(["finish", "restart"]);
 
 const handleClick = () => {
   if (props.isEnd) {
-    emits('restart');
+    emits("restart");
   } else {
-    emits('finish');
+    emits("finish");
   }
 };
 </script>
@@ -44,7 +40,7 @@ const handleClick = () => {
   padding: 20px;
 
   .finish-btn {
-    font-family: 'Noto Sans KR';
+    font-family: "Noto Sans KR";
     color: #fff;
     font-size: 22px;
     font-weight: 500;

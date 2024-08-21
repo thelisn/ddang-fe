@@ -2,22 +2,14 @@
   <div class="answer-container">
     <p class="status">
       {{ currentUser }} 명/{{ totalUser }} 명 ({{
-        Number.isNaN(Math.ceil(currentUser / totalUser) * 100)
-          ? 0
-          : Math.ceil(currentUser / totalUser) * 100
+        Number.isNaN(Math.ceil(currentUser / totalUser) * 100) ? 0 : Math.ceil(currentUser / totalUser) * 100
       }}%) 완료
     </p>
     <div class="status-view">
       <div class="enter-user-area">
-        <ul
-          v-for="(users, key, index) of userAnswerInfo"
-          :key="`users-${index}`"
-        >
+        <ul v-for="(users, key, index) of userAnswerInfo" :key="`users-${index}`">
           <li v-for="(user, userIndex) of users" :key="`user-${userIndex}`">
-            <div
-              class="circle"
-              :class="[!user.answer && 'blank', getClass(key)]"
-            />
+            <div class="circle" :class="[!user.answer && 'blank', getClass(key)]" />
           </li>
         </ul>
       </div>
@@ -27,8 +19,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps, defineEmits } from "vue";
+import { getClass } from "@/utils";
 
 const props = defineProps({
   currentUser: Number,
@@ -36,10 +28,10 @@ const props = defineProps({
   userAnswerInfo: Object,
 });
 
-const emit = defineEmits(['show-answer']);
+const emit = defineEmits(["show-answer"]);
 
 const emitShowAnswer = () => {
-  emit('show-answer');
+  emit("show-answer");
 };
 </script>
 

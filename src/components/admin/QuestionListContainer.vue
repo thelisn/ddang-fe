@@ -1,28 +1,13 @@
 <template>
   <div class="question-list-container">
     <ul>
-      <li
-        class="list-wrap"
-        v-for="(question, idx) in questionData"
-        :key="idx"
-        :class="questionStatus(question)"
-      >
+      <li class="list-wrap" v-for="(question, idx) in questionData" :key="idx" :class="questionStatus(question)">
         <p class="number">Q{{ idx + 1 }}</p>
         <p class="result">
-          {{
-            question.isFinished
-              ? question.question
-              : question.isStarted
-              ? '진행중'
-              : question.question
-          }}
+          {{ question.isFinished ? question.question : question.isStarted ? "진행중" : question.question }}
         </p>
-        <button
-          class="question-btn"
-          @click="startButton(question)"
-          :disabled="question.isStarted"
-        >
-          {{ question.isStarted ? '완료' : '시작' }}
+        <button class="question-btn" :disabled="isEnd || question.isStarted" @click="startButton(question)">
+          {{ isEnd ? "종료" : question.isStarted ? "완료" : "시작" }}
         </button>
       </li>
     </ul>
@@ -30,32 +15,29 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from 'vue';
+import { defineEmits, defineProps } from "vue";
 
 // Define props
 const props = defineProps({
   questionData: Array,
   currentQuestion: Number,
+  isEnd: Boolean,
 });
 
 // Define emits
-const emit = defineEmits(['start-quiz', 'restart-quiz']);
+const emit = defineEmits(["start-quiz"]);
 
 const startButton = (question) => {
-  if (question.isStarted) {
-    emit('restart-quiz');
-  } else {
-    emit('start-quiz', question);
-  }
+  emit("start-quiz", question);
 };
 
 const questionStatus = (data) => {
   if (!data.isStarted) {
-    return 'before';
+    return "before";
   } else if (data.isFinished) {
     return null;
   } else {
-    return 'on';
+    return "on";
   }
 };
 </script>
@@ -68,11 +50,11 @@ const questionStatus = (data) => {
     margin-top: 14px;
     display: flex;
     justify-content: space-between;
+    gap: 10px;
     align-items: center;
     color: #fff;
     font-size: 20px;
     font-weight: 500;
-    text-align: center;
 
     &.on {
       margin: 9px -20px 0;
@@ -83,16 +65,17 @@ const questionStatus = (data) => {
       .question-btn {
         visibility: hidden;
       }
+
+      & ~ .before .question-btn {
+        pointer-events: none;
+        user-select: none;
+      }
     }
 
     &.before {
       .result {
         color: #999;
-        font-size: 14px;
-        font-weight: 500;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        font-weight: 400;
       }
     }
 
@@ -105,18 +88,28 @@ const questionStatus = (data) => {
     }
 
     .result {
-      width: 170px;
+      font-size: 18px;
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     .question-btn {
       width: 94px;
       padding: 6px 26px;
-      background-color: #eb1c1c;
-      color: #fff;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), #eb231c;
       border-radius: 20px;
-      font-size: 16px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: "Noto Sans KR";
+
       &:disabled {
-        background-color: #555;
+        pointer-events: none;
+        user-select: none;
+        filter: grayscale(1);
       }
     }
   }

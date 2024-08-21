@@ -3,10 +3,7 @@
   <div v-else id="admin-page">
     <LisnHeader />
 
-    <QuestionContainer
-      v-if="currentQuestion && currentQuestionData"
-      :currentQuestionData="currentQuestionData"
-    />
+    <QuestionContainer v-if="currentQuestion && currentQuestionData" :currentQuestionData="currentQuestionData" />
 
     <AnswerContainer
       v-if="currentQuestion"
@@ -18,34 +15,31 @@
 
     <QuestionListContainer
       :questionData="questionData"
-      @startQuiz="startQuiz"
-      @restartQuiz="restartQuiz"
       :questionStatus="questionStatus"
+      :isEnd="isEnd"
+      @restartQuiz="restartQuiz"
+      @startQuiz="startQuiz"
     />
 
     <TeamContainer :teamData="teamData" @revive="revive" />
 
-    <ButtonContainer
-      :isEnd="isEnd"
-      @finish="finishBtn"
-      @restart="restartQuiz"
-    />
+    <ButtonContainer :isEnd="isEnd" @finish="finishBtn" @restart="restartQuiz" />
   </div>
 </template>
 
 <script setup>
-import { state, socket } from '@/socket';
-import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from 'vue';
-import { getUserInfo, sortTeamMember } from '../utils/index';
-import LisnHeader from '@/components/LisnHeader.vue';
-import QuestionContainer from '@/components/admin/QuestionContainer.vue';
-import AnswerContainer from '@/components/admin/AnswerContainer.vue';
-import QuestionListContainer from '@/components/admin/QuestionListContainer.vue';
-import TeamContainer from '@/components/admin/TeamContainer.vue';
-import ButtonContainer from '@/components/admin/ButtonContainer.vue';
-import axios from 'axios';
-import router from '@/router';
-import { getClass } from '@/utils';
+import { state, socket } from "@/socket";
+import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from "vue";
+import { getUserInfo, sortTeamMember } from "../utils/index";
+import LisnHeader from "@/components/LisnHeader.vue";
+import QuestionContainer from "@/components/admin/QuestionContainer.vue";
+import AnswerContainer from "@/components/admin/AnswerContainer.vue";
+import QuestionListContainer from "@/components/admin/QuestionListContainer.vue";
+import TeamContainer from "@/components/admin/TeamContainer.vue";
+import ButtonContainer from "@/components/admin/ButtonContainer.vue";
+import axios from "axios";
+import router from "@/router";
+import { getClass } from "@/utils";
 // 변수
 const questionData = ref(null);
 const currentQuestionData = ref(null);
@@ -59,64 +53,57 @@ const isLoading = ref(true);
 const totalUser = ref(0);
 const currentUser = ref(0);
 const userAnswerInfo = ref({});
-const instance = getCurrentInstance();
 const isEnd = ref(false);
+const instance = getCurrentInstance();
 
 // 함수
 const showAnswer = async () => {
   // 채점하고자 하는 문제 번호 파라미터로 전송
-  socket.emit('show-answer', {
+  socket.emit("show-answer", {
     userInfo: userInfo.value,
     currentQuestion,
   });
-  updatePage();
-  currentQuestion.value = null;
-};
 
-const revive = (data) => {
-  if (!data.isAlive) {
-    if (confirm('부활시키겠습니까?')) {
-      socket.emit('revive', data);
-    }
-  }
+  // 기존 열려있던 데이터 isFinshed true로
+  const number = currentQuestionData.value.number;
+  questionData.value[number - 1].isFinished = true;
+
+  currentQuestion.value = null;
+  currentQuestionData.value = null;
 };
 
 const startQuiz = async (question) => {
+  if (question.isStarted || isEnd.value) return false;
+
   currentQuestion.value = question.number;
 
   // 시작하고자 하는 퀴즈 번호 파라미터로 전송
-  socket.emit('start-quiz', {
+  socket.emit("start-quiz", {
     userInfo: userInfo.value,
     questionNum: question.number,
   });
 
-  await axios.get('/api/admin').then((res) => {
+  await axios.get("/api/admin").then((res) => {
     questionData.value = res.data.questionData;
     userData.value = res.data.userData;
+    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
   });
 };
 
-const restartQuiz = () => {
-  if (confirm('정말 재시작 하시겠습니까?')) {
-    socket.emit('re-start-quiz');
-    isEnd.value = false;
-    updatePage();
-  }
-};
 const questionStatus = (data) => {
   if (!data.isStarted) {
-    return 'before';
+    return "before";
   } else {
     if (data.isFinished) {
       return null;
     } else {
-      return 'on';
+      return "on";
     }
   }
 };
 
 const updatePage = async () => {
-  await axios.get('/api/admin').then((res) => {
+  await axios.get("/api/admin").then((res) => {
     questionData.value = res.data.questionData;
     userData.value = res.data.userData;
     if (res.data.currentQuestion) {
@@ -125,54 +112,59 @@ const updatePage = async () => {
     currentUser.value = res.data.currentUser;
     totalUser.value = res.data.totalUser;
 
-    currentQuestionData.value = res.data.questionData.filter(
-      (data) => data.number === currentQuestion.value
-    )[0];
+    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
     isLoading.value = false;
     teamData.value = sortTeamMember(userData.value);
     instance?.proxy?.$forceUpdate();
-    console.log(res.data);
   });
 };
 
 const finishBtn = () => {
-  if (confirm('정말 종료 하시겠습니까?')) {
-    socket.emit('show-end-winner', () => {
+  if (confirm("정말 종료 하시겠습니까?")) {
+    socket.emit("show-end-winner", (data) => {
       isEnd.value = true;
+
+      questionData.value = data.questionData;
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
     });
   }
 };
 
-// const finishBtn = () => {
-//   if (confirm('정말 종료 하시겠습니까?')) {
-//     socket.emit('show-end-winner');
-//     router.push('/end');
-//   }
-// };
+const restartQuiz = async () => {
+  if (confirm("정말 재시작 하시겠습니까?")) {
+    socket.emit("re-start-quiz", () => {
+      isEnd.value = false;
 
-// const resetBtn = () => {
-//   if (confirm('정말 초기화 하시겠습니까?')) {
-//     updatePage();
-//   }
-// };
+      updatePage();
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
+    });
+  }
+};
+
+const revive = (data) => {
+  if (!data.isAlive) {
+    if (confirm("부활시키겠습니까?")) {
+      socket.emit("revive", data);
+    }
+  }
+};
 
 // Life Cycle
 onMounted(() => {
   userInfo.value = getUserInfo();
 
   // 처음 페이지 진입 시 실행
-  socket.on('join-admin-quiz', (data) => {
+  socket.on("join-admin-quiz", (data) => {
     if (data.currentQuestion) {
       currentQuestion.value = data.currentQuestion;
     }
-    console.log(data, 'mounted');
     currentUser.value = data.currentUser;
     totalUser.value = data.totalUser;
     isLoading.value = false;
     questionData.value = data.questionData;
-    currentQuestionData.value = data.questionData.filter(
-      (data) => data.number === currentQuestion.value
-    )[0];
+    currentQuestionData.value = data.questionData.filter((data) => data.number === currentQuestion.value)[0];
     userData.value = data.userData;
     isAlive.value = data.userData.isAlive;
     isData.value = true;
@@ -180,42 +172,29 @@ onMounted(() => {
   });
 
   // 부활 요청시 실행
-  socket.on('revive', async () => {
+  socket.on("revive", async () => {
     updatePage();
   });
 
   // 유저 로그인 시 실행
-  socket.on('login', async () => {
+  socket.on("login", async () => {
     updatePage();
   });
 
   // 유저가 퀴즈에 접속했을 때
-  socket.on('join-quiz', () => {
-    socket.emit('update-current-user', currentQuestion.value);
+  socket.on("join-quiz", (data) => {
+    userAnswerInfo.value = Object.groupBy(data.userAnswerInfo, ({ team }) => team);
+    socket.emit("update-current-user", currentQuestion.value);
   });
 
   // 유저가 보기 클릭했을 때
-  socket.on('select-answer', () => {
-    socket.emit('update-current-user', currentQuestion.value);
-  });
-
-  // 유저가 퀴즈에 접속했을 때
-  socket.on('join-quiz', (data) => {
-    userAnswerInfo.value = Object.groupBy(
-      data.userAnswerInfo,
-      ({ team }) => team
-    );
-    socket.emit('update-current-user', currentQuestion.value);
-  });
-
-  // 유저가 보기 클릭했을 때
-  socket.on('select-answer', (data) => {
+  socket.on("select-answer", (data) => {
     userAnswerInfo.value = Object.groupBy(data, ({ team }) => team);
-    socket.emit('update-current-user', currentQuestion.value);
+    socket.emit("update-current-user", currentQuestion.value);
   });
 
   // 현재 문제 푼 유저 정보 업데이트
-  socket.on('update-current-user', (data) => {
+  socket.on("update-current-user", (data) => {
     currentUser.value = data.currentUser;
     totalUser.value = data.totalUser;
     updatePage();
@@ -230,12 +209,12 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  socket.off('join-admin-quiz');
-  socket.off('revive');
-  socket.off('login');
-  socket.off('select-answer');
-  socket.off('update-current-user');
-  socket.off('join-quiz');
+  socket.off("join-admin-quiz");
+  socket.off("revive");
+  socket.off("login");
+  socket.off("select-answer");
+  socket.off("update-current-user");
+  socket.off("join-quiz");
 });
 </script>
 
@@ -245,6 +224,6 @@ onBeforeUnmount(() => {
   position: relative;
   background-color: #111;
   padding: 60px 20px 20px;
-  font-family: 'Noto Sans KR';
+  font-family: "Noto Sans KR";
 }
 </style>
