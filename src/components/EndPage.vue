@@ -95,7 +95,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  socket.off("show-end-winner");
   socket.off("re-start-quiz");
 });
 </script>

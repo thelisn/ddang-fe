@@ -25,133 +25,120 @@
   </div>
 </template>
 
-<script>
-import { state, socket } from "@/socket";
+<script setup>
+import { socket } from "@/socket";
 import { useStore } from "vuex";
 import { getClass, getUserInfo } from "@/utils";
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import router from "@/router";
 import axios from "axios";
 
 import LisnHeader from "./LisnHeader.vue";
 
-export default {
-  name: "WaitingRoom",
-  components: {
-    LisnHeader,
-  },
-  setup() {
-    // 변수
-    const store = useStore();
-    const currentQuestion = ref(null);
-    const teamData = ref(null);
-    const isAdmin = ref(null);
-    const checkHeight = ref(false);
-    const isData = ref(false);
-    const userInfo = ref(null);
+// 변수
+const store = useStore();
+const currentQuestion = ref(null);
+const teamData = ref(null);
+const isAdmin = ref(null);
+const checkHeight = ref(false);
+const isData = ref(false);
+const userInfo = ref(null);
 
-    // 함수
-    const joinQuiz = () => {
-      if (!currentQuestion.value) return false;
+// 함수
+const joinQuiz = () => {
+  if (!currentQuestion.value) return false;
 
-      // 사번을 파라미터로 보낸다
-      socket.emit("join-quiz", userInfo.value);
-      router.push({ path: "/quiz", state: { isRouter: true } });
-    };
-
-    const joinAdminQuiz = () => {
-      socket.emit("join-admin-quiz");
-      router.push({ path: "/admin", state: { isRouter: true } });
-    };
-
-    // Life Cycle
-    onMounted(() => {
-      userInfo.value = getUserInfo();
-
-      socket.on("login", (data) => {
-        currentQuestion.value = data.currentQuestion;
-
-        let teams = {};
-
-        data.teamData.forEach((person) => {
-          const { team } = person;
-
-          if (!teams[team]) {
-            teams[team] = [];
-          }
-          teams[team].push(person);
-        });
-
-        teamData.value = teams;
-        isAdmin.value = data.userData.isAdmin;
-        isData.value = true;
-      });
-
-      socket.on("start-quiz", (data) => {
-        currentQuestion.value = data;
-      });
-
-      socket.on("rejoin", (data) => {
-        currentQuestion.value = data.currentQuestion;
-        let teams = {};
-
-        data.teamData.forEach((person) => {
-          const { team } = person;
-          if (!teams[team]) {
-            teams[team] = [];
-          }
-          teams[team].push(person);
-        });
-
-        teamData.value = teams;
-
-        isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
-      });
-
-      setTimeout(async () => {
-        if (!isData.value) {
-          await axios.get("/api/waiting").then((res) => {
-            isAdmin.value = userInfo.value.isAdmin;
-
-            if (res.data.currentQuestion) {
-              currentQuestion.value = res.data.currentQuestion;
-            }
-
-            let teams = {};
-            res.data.userData.forEach((person) => {
-              const { team } = person;
-
-              if (!teams[team]) {
-                teams[team] = [];
-              }
-
-              teams[team].push(person);
-            });
-
-            teamData.value = teams;
-          });
-        }
-      }, 500);
-    });
-
-    onBeforeUnmount(() => {
-      socket.off("login");
-      socket.off("start-quiz");
-      socket.off("rejoin");
-    });
-
-    return {
-      joinQuiz,
-      joinAdminQuiz,
-      currentQuestion,
-      getClass,
-      teamData,
-      isAdmin,
-      checkHeight,
-    };
-  },
+  // 사번을 파라미터로 보낸다
+  socket.emit("join-quiz", userInfo.value);
+  router.push({ path: "/quiz", state: { isRouter: true } });
 };
+
+const joinAdminQuiz = () => {
+  socket.emit("join-admin-quiz");
+  router.push({ path: "/admin", state: { isRouter: true } });
+};
+
+// Life Cycle
+onMounted(() => {
+  userInfo.value = getUserInfo();
+
+  socket.on("login", (data) => {
+    currentQuestion.value = data.currentQuestion;
+
+    let teams = {};
+
+    data.teamData.forEach((person) => {
+      const { team } = person;
+
+      if (!teams[team]) {
+        teams[team] = [];
+      }
+      teams[team].push(person);
+    });
+
+    teamData.value = teams;
+    isAdmin.value = data.userData.isAdmin;
+    isData.value = true;
+  });
+
+  socket.on("start-quiz", (data) => {
+    currentQuestion.value = data;
+  });
+
+  socket.on("show-answer", (data) => {
+    currentQuestion.value = null;
+  });
+
+  socket.on("rejoin", (data) => {
+    currentQuestion.value = data.currentQuestion;
+    let teams = {};
+
+    data.teamData.forEach((person) => {
+      const { team } = person;
+      if (!teams[team]) {
+        teams[team] = [];
+      }
+      teams[team].push(person);
+    });
+
+    teamData.value = teams;
+
+    isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
+  });
+
+  setTimeout(async () => {
+    if (!isData.value) {
+      await axios.get("/api/waiting").then((res) => {
+        isAdmin.value = userInfo.value.isAdmin;
+
+        if (res.data.currentQuestion) {
+          currentQuestion.value = res.data.currentQuestion;
+        }
+
+        let teams = {};
+        res.data.userData.forEach((person) => {
+          const { team } = person;
+
+          if (!teams[team]) {
+            teams[team] = [];
+          }
+
+          teams[team].push(person);
+        });
+
+        teamData.value = teams;
+      });
+    }
+  }, 500);
+});
+
+onBeforeUnmount(() => {
+  socket.off("login");
+  socket.off("start-quiz");
+  socket.off("show-answer");
+  socket.off("rejoin");
+});
 </script>
 
 <style lang="scss" scoped src="@/assets/scss/component/pages/WaitingRoom.scss"></style>
