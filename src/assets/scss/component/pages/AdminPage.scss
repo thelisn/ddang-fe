@@ -91,6 +91,11 @@
         .question-btn {
           visibility: hidden;
         }
+
+        & ~ .before .question-btn {
+          pointer-events: none;
+          user-select: none;
+        }
       }
 
       &.before {
