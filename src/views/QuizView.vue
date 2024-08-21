@@ -7,6 +7,7 @@
         :answers="answers"
         :selectedAnswer="selectedAnswer"
         :isAlive="isAlive"
+        :userAnswerInfo="userAnswerInfo"
         @answer-selected="selectAnswer"
       />
     </section>
@@ -30,6 +31,7 @@ const selectedAnswer = ref(false);
 const isAlive = ref(null);
 const isData = ref(null);
 const userInfo = ref(null);
+const userAnswerInfo = ref({});
 
 const selectAnswer = (idx) => {
   selectedAnswer.value = idx;
@@ -49,6 +51,13 @@ onMounted(() => {
     isAlive.value = data.isAlive;
     isData.value = true;
     selectedAnswer.value = data.selectedAnswer;
+    userAnswerInfo.value = Object.groupBy(
+      data.userAnswerInfo,
+      ({ team }) => team
+    );
+  });
+  socket.on('select-answer', (data) => {
+    userAnswerInfo.value = Object.groupBy(data, ({ team }) => team);
   });
 
   socket.on('show-answer', (data) => {
@@ -57,7 +66,7 @@ onMounted(() => {
       number: data.currentQuestion,
       correctAnswer: data.correctAnswer,
     });
-    router.push('/result');
+    router.push({ path: '/result', state: { isRouter: true } });
   });
 
   setTimeout(async () => {
@@ -85,6 +94,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   socket.off('join-quiz');
   socket.off('show-answer');
+  socket.off('select-answer');
 });
 </script>
 

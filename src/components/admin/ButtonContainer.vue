@@ -1,26 +1,47 @@
 <template>
-  <div class="btn-container">
+  <!-- <div class="btn-container">
     <button class="finish-btn" @click="$emit('finish')">종료</button>
     <button class="reset-btn" @click="$emit('reset')">초기화</button>
+  </div> -->
+  <div class="btn-container">
+    <button class="finish-btn" @click="handleClick">
+      {{ isEnd ? '재시작' : '종료' }}
+    </button>
   </div>
 </template>
 
 <script setup>
-import { defineEmits } from 'vue';
+import { defineEmits, defineProps } from 'vue';
 
-const emits = defineEmits(['finish', 'reset']);
+const props = defineProps({
+  isEnd: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emits = defineEmits(['finish', 'restart']);
+
+const handleClick = () => {
+  if (props.isEnd) {
+    emits('restart');
+  } else {
+    emits('finish');
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 .btn-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 70px;
   width: 100%;
   background-color: #111;
-  padding-top: 10px;
-  padding-bottom: 20px;
+  padding: 20px;
 
   .finish-btn {
     font-family: 'Noto Sans KR';
@@ -31,19 +52,6 @@ const emits = defineEmits(['finish', 'reset']);
     height: 60px;
     border-radius: 20px;
     background-color: #eb1c1c;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-
-  .reset-btn {
-    font-family: 'Noto Sans KR';
-    color: #111;
-    font-size: 22px;
-    font-weight: 500;
-    width: 100%;
-    height: 60px;
-    border-radius: 20px;
-    background-color: #555;
     cursor: pointer;
   }
 }

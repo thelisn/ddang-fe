@@ -48,6 +48,7 @@ const teams = [
   margin-top: 62px;
   color: #fff;
   height: 100%;
+  margin-bottom: 100px;
 
   .team-wrap {
     margin-top: 50px;

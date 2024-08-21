@@ -12,6 +12,7 @@
       v-if="currentQuestion"
       :currentUser="currentUser"
       :totalUser="totalUser"
+      :userAnswerInfo="userAnswerInfo"
       @showAnswer="showAnswer"
     />
 
@@ -24,7 +25,11 @@
 
     <TeamContainer :teamData="teamData" @revive="revive" />
 
-    <ButtonContainer @finish="finishBtn" @reset="resetBtn" />
+    <ButtonContainer
+      :isEnd="isEnd"
+      @finish="finishBtn"
+      @restart="restartQuiz"
+    />
   </div>
 </template>
 
@@ -40,7 +45,7 @@ import TeamContainer from '@/components/admin/TeamContainer.vue';
 import ButtonContainer from '@/components/admin/ButtonContainer.vue';
 import axios from 'axios';
 import router from '@/router';
-
+import { getClass } from '@/utils';
 // 변수
 const questionData = ref(null);
 const currentQuestionData = ref(null);
@@ -53,7 +58,9 @@ const userInfo = ref();
 const isLoading = ref(true);
 const totalUser = ref(0);
 const currentUser = ref(0);
+const userAnswerInfo = ref({});
 const instance = getCurrentInstance();
+const isEnd = ref(false);
 
 // 함수
 const showAnswer = async () => {
@@ -90,9 +97,12 @@ const startQuiz = async (question) => {
 };
 
 const restartQuiz = () => {
-  console.log('restart');
+  if (confirm('정말 재시작 하시겠습니까?')) {
+    socket.emit('re-start-quiz');
+    isEnd.value = false;
+    updatePage();
+  }
 };
-
 const questionStatus = (data) => {
   if (!data.isStarted) {
     return 'before';
@@ -127,16 +137,24 @@ const updatePage = async () => {
 
 const finishBtn = () => {
   if (confirm('정말 종료 하시겠습니까?')) {
-    socket.emit('show-end-winner');
-    router.push('/end');
+    socket.emit('show-end-winner', () => {
+      isEnd.value = true;
+    });
   }
 };
 
-const resetBtn = () => {
-  if (confirm('정말 초기화 하시겠습니까?')) {
-    updatePage();
-  }
-};
+// const finishBtn = () => {
+//   if (confirm('정말 종료 하시겠습니까?')) {
+//     socket.emit('show-end-winner');
+//     router.push('/end');
+//   }
+// };
+
+// const resetBtn = () => {
+//   if (confirm('정말 초기화 하시겠습니까?')) {
+//     updatePage();
+//   }
+// };
 
 // Life Cycle
 onMounted(() => {
@@ -181,6 +199,21 @@ onMounted(() => {
     socket.emit('update-current-user', currentQuestion.value);
   });
 
+  // 유저가 퀴즈에 접속했을 때
+  socket.on('join-quiz', (data) => {
+    userAnswerInfo.value = Object.groupBy(
+      data.userAnswerInfo,
+      ({ team }) => team
+    );
+    socket.emit('update-current-user', currentQuestion.value);
+  });
+
+  // 유저가 보기 클릭했을 때
+  socket.on('select-answer', (data) => {
+    userAnswerInfo.value = Object.groupBy(data, ({ team }) => team);
+    socket.emit('update-current-user', currentQuestion.value);
+  });
+
   // 현재 문제 푼 유저 정보 업데이트
   socket.on('update-current-user', (data) => {
     currentUser.value = data.currentUser;
@@ -209,6 +242,7 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 #admin-page {
   min-height: 100vh;
+  position: relative;
   background-color: #111;
   padding: 60px 20px 20px;
   font-family: 'Noto Sans KR';

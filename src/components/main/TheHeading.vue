@@ -24,7 +24,7 @@ const clearLocalStorage = () => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .logo-wrap {
   display: flex;
   justify-content: center;
