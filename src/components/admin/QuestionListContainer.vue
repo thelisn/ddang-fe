@@ -19,10 +19,10 @@
         </p>
         <button
           class="question-btn"
+          :disabled="isEnd || question.isStarted"
           @click="startButton(question)"
-          :disabled="question.isStarted"
         >
-          {{ question.isStarted ? '완료' : '시작' }}
+          {{ isEnd ? '종료' : question.isStarted ? '완료' : '시작' }}
         </button>
       </li>
     </ul>
@@ -36,17 +36,14 @@ import { defineEmits, defineProps } from 'vue';
 const props = defineProps({
   questionData: Array,
   currentQuestion: Number,
+  isEnd: Boolean,
 });
 
 // Define emits
-const emit = defineEmits(['start-quiz', 'restart-quiz']);
+const emit = defineEmits(['start-quiz']);
 
 const startButton = (question) => {
-  if (question.isStarted) {
-    emit('restart-quiz');
-  } else {
-    emit('start-quiz', question);
-  }
+  emit('start-quiz', question);
 };
 
 const questionStatus = (data) => {
@@ -68,11 +65,11 @@ const questionStatus = (data) => {
     margin-top: 14px;
     display: flex;
     justify-content: space-between;
+    gap: 10px;
     align-items: center;
     color: #fff;
     font-size: 20px;
     font-weight: 500;
-    text-align: center;
 
     &.on {
       margin: 9px -20px 0;
@@ -83,16 +80,17 @@ const questionStatus = (data) => {
       .question-btn {
         visibility: hidden;
       }
+
+      & ~ .before .question-btn {
+        pointer-events: none;
+        user-select: none;
+      }
     }
 
     &.before {
       .result {
         color: #999;
-        font-size: 14px;
-        font-weight: 500;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        font-weight: 400;
       }
     }
 
@@ -105,18 +103,33 @@ const questionStatus = (data) => {
     }
 
     .result {
-      width: 170px;
+      font-size: 18px;
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     .question-btn {
       width: 94px;
       padding: 6px 26px;
-      background-color: #eb1c1c;
-      color: #fff;
+      background: linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.5) 0%,
+          rgba(0, 0, 0, 0.5) 100%
+        ),
+        #eb231c;
       border-radius: 20px;
-      font-size: 16px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Noto Sans KR';
+
       &:disabled {
-        background-color: #555;
+        pointer-events: none;
+        user-select: none;
+        filter: grayscale(1);
       }
     }
   }

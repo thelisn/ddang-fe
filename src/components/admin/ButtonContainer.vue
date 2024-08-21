@@ -1,8 +1,4 @@
 <template>
-  <!-- <div class="btn-container">
-    <button class="finish-btn" @click="$emit('finish')">종료</button>
-    <button class="reset-btn" @click="$emit('reset')">초기화</button>
-  </div> -->
   <div class="btn-container">
     <button class="finish-btn" @click="handleClick">
       {{ isEnd ? '재시작' : '종료' }}

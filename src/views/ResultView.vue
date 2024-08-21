@@ -25,7 +25,7 @@ import WrongAnswer from '@/components/result/WrongAnswer.vue';
 import { getUserInfo } from '@/utils';
 
 // 변수
-let checkAnswer = ref(null);
+const checkAnswer = ref(null);
 const userInfo = ref(null);
 const answerData = ref(null);
 const correctAnswerData = ref(null);

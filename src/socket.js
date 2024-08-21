@@ -12,7 +12,8 @@ export const state = reactive({
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = 'http://localhost:3100';
+const URL = process.env.VUE_APP_API_URL;
+// const URL = "https://port-0-ddang-api-lzqe79pmd8a5a76c.sel4.cloudtype.app";
 
 export const socket = io(URL);
 

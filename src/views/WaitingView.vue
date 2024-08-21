@@ -74,9 +74,12 @@ onMounted(() => {
     currentQuestion.value = data;
   });
 
+  socket.on('show-answer', (data) => {
+    currentQuestion.value = null;
+  });
+
   socket.on('rejoin', (data) => {
     currentQuestion.value = data.currentQuestion;
-
     let teams = {};
 
     data.teamData.forEach((person) => {
@@ -120,6 +123,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   socket.off('login');
   socket.off('start-quiz');
+  socket.off('show-answer');
   socket.off('rejoin');
 });
 </script>
