@@ -138,7 +138,6 @@ const userAnswerInfo = ref({});
 const isEnd = ref(false);
 const instance = getCurrentInstance();
 
-// @NOTE 다음 번호는 못누르게 막아야함.
 // 함수
 const showAnswer = async () => {
   // 채점하고자 하는 문제 번호 파라미터로 전송
@@ -147,16 +146,12 @@ const showAnswer = async () => {
     currentQuestion,
   });
 
+  // 기존 열려있던 데이터 isFinshed true로
+  const number = currentQuestionData.value.number;
+  questionData.value[number - 1].isFinished = true;
+
   currentQuestion.value = null;
   currentQuestionData.value = null;
-};
-
-const revive = (data) => {
-  if (!data.isAlive) {
-    if (confirm("부활시키겠습니까?")) {
-      socket.emit("revive", data);
-    }
-  }
 };
 
 const startQuiz = async (question) => {
@@ -227,6 +222,14 @@ const restartQuiz = async () => {
       currentQuestion.value = null;
       currentQuestionData.value = null;
     });
+  }
+};
+
+const revive = (data) => {
+  if (!data.isAlive) {
+    if (confirm("부활시키겠습니까?")) {
+      socket.emit("revive", data);
+    }
   }
 };
 
