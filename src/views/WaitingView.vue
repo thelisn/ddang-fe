@@ -37,13 +37,14 @@ const userInfo = ref(null);
 
 // 함수
 const joinQuiz = () => {
+  if (!currentQuestion.value) return false;
   socket.emit('join-quiz', userInfo.value);
-  router.push('/quiz');
+  router.push({ path: '/quiz', state: { isRouter: true } });
 };
 
 const joinAdminQuiz = () => {
   socket.emit('join-admin-quiz');
-  router.push('/admin');
+  router.push({ path: '/admin', state: { isRouter: true } });
 };
 
 // Life Cycle

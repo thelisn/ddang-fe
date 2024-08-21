@@ -31,7 +31,7 @@ const answerData = ref(null);
 const correctAnswerData = ref(null);
 const correctUserData = ref(null);
 const questionData = ref(null);
-const correctAnswer = ref(null);
+const userAnswer = ref(null);
 const isLoading = ref(true);
 
 // Life Cycle
@@ -39,26 +39,36 @@ onMounted(() => {
   userInfo.value = getUserInfo();
 
   socket.on('check-answer', (data) => {
-    checkAnswer.value = data.isCorrect;
-    correctUserData.value = data.correctUserData;
     questionData.value = data.questionData;
-    correctAnswer.value = data.correctAnswer;
-    answerData.value = data.answerData.filter(
-      (data) => data.number !== correctAnswer.value
-    );
-    correctAnswerData.value = data.answerData.find(
-      (data) => data.number === correctAnswer.value
-    );
+    answerData.value = data.answerData
+      .filter((v) => v.number !== data.correctAnswer)
+      .map((v) => {
+        return {
+          ...v,
+          userData: Object.groupBy(v.userData, ({ team }) => team),
+        };
+      });
+
+    correctAnswerData.value = data.answerData.filter(
+      (v) => v.number === data.correctAnswer
+    )[0];
+    userAnswer.value = data.userAnswer;
+    checkAnswer.value = data.isCorrect;
+
     isLoading.value = false;
   });
 
-  socket.on('start-quiz', () => {
+  socket.on('start-quiz', (data) => {
+    // 사번을 파라미터로 보낸다
     socket.emit('join-quiz', userInfo.value);
-    router.push('/quiz');
+    router.push({ path: '/quiz', state: { isRouter: true } });
   });
 
-  socket.on('show-end-winner', () => {
-    router.push('/end');
+  socket.on('show-end-winner', (data) => {
+    router.push({
+      path: '/end',
+      state: { isRouter: true, userData: data.userData },
+    });
   });
 });
 

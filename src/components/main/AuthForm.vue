@@ -7,7 +7,7 @@
       name="id"
       :disabled="isLoggedIn"
     />
-    <label for="lisn-input" class="input-label">사번 or 이름</label>
+    <label for="lisn-input" class="input-label">이름</label>
     <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
     <button v-else class="login-btn" @click="rejoin">재입장하기</button>
   </div>
@@ -28,40 +28,26 @@ const login = () => {
   socket.emit('login', input.value.toUpperCase());
 };
 
-const setLocalStorage = (data) => {
-  let localData = localStorage.getItem('userInfo');
+const setLocalStorage = (userInfoData) => {
+  const hasLocalData = localStorage.getItem('userInfo');
 
-  if (!localData) {
-    localStorage.setItem(
-      'userInfo',
-      JSON.stringify({
-        id: data.id,
-        name: data.name,
-        einumber: data.einumber,
-        teamName: data.team,
-        isAdmin: data.isAdmin,
-      })
-    );
-  }
-  router.push('/waiting');
+  if (!hasLocalData)
+    localStorage.setItem('userInfo', JSON.stringify(userInfoData));
+
+  router.push({ path: '/waiting', state: { isRouter: true } });
 };
 
 const rejoin = () => {
   let userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   socket.emit('rejoin', userInfo);
-  router.push('/waiting');
+  router.push({ path: '/waiting', state: { isRouter: true } });
 };
 
 onMounted(() => {
-  let localData = localStorage.getItem('userInfo');
+  isLoggedIn.value = !!localStorage.getItem('userInfo');
 
-  if (localData) {
-    isLoggedIn.value = true;
-  } else {
-    isLoggedIn.value = false;
-  }
-
+  //@NOTE 로그인 후 다시 메인으로 왔을 경우 waiting으로 보낼지 리조인 만들지 수정 필요.
   socket.on('login', (data) => {
     if (data.error === true) {
       alert(data.msg);

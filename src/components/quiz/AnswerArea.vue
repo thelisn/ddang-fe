@@ -1,4 +1,11 @@
 <template>
+  <div class="enter-user-area">
+    <ul v-for="(users, key, index) of userAnswerInfo" :key="`users-${index}`">
+      <li v-for="(user, userIndex) of users" :key="`user-${userIndex}`">
+        <div class="circle" :class="[!user.answer && 'blank', getClass(key)]" />
+      </li>
+    </ul>
+  </div>
   <div class="answer-area" :class="!isAlive ? 'dead' : null">
     <ul>
       <li class="answer-list" v-for="(answer, idx) in answers" :key="idx">
@@ -39,6 +46,7 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  userAnswerInfo: Object,
 });
 
 const emit = defineEmits(['answer-selected']);
@@ -49,6 +57,27 @@ const selectAnswer = (idx) => {
 </script>
 
 <style scoped lang="scss">
+.enter-user-area {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  & > ul {
+    display: flex;
+    gap: 2px;
+
+    li .circle {
+      width: 8px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+
+      &.blank {
+        background-color: transparent;
+        border: 1px solid currentColor;
+      }
+    }
+  }
+}
 .answer-area {
   width: 100%;
   margin-right: -20px;

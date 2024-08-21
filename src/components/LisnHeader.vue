@@ -26,12 +26,6 @@ const userName = ref(null);
 const isAdmin = ref(false);
 
 // 함수
-const clearLocalStorage = () => {
-  if (confirm('localstorage 삭제!!')) {
-    localStorage.clear();
-    router.push('/');
-  }
-};
 
 // Life Cycle
 onMounted(() => {
