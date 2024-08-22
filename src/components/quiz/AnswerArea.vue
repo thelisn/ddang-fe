@@ -12,14 +12,7 @@
         <span class="answer-number">{{ idx + 1 }}</span>
         <button
           class="answer-button"
-          :class="[
-            getClass(),
-            selectedAnswer === idx + 1
-              ? 'selected'
-              : selectedAnswer
-              ? 'not-selected'
-              : null,
-          ]"
+          :class="[getClass(), selectedAnswer === idx + 1 ? 'selected' : selectedAnswer ? 'not-selected' : null]"
           @click="selectAnswer(idx + 1)"
         >
           {{ answer.text }}
@@ -30,29 +23,14 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps, defineEmits } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  answers: {
-    type: Array,
-    required: true,
-  },
-  selectedAnswer: {
-    type: Number,
-    required: true,
-  },
-  isAlive: {
-    type: Boolean,
-    required: true,
-  },
-  userAnswerInfo: Object,
-});
-
-const emit = defineEmits(['answer-selected']);
+const props = defineProps(["answers", "selectedAnswer", "isAlive", "userAnswerInfo"]);
+const emit = defineEmits(["answer-selected"]);
 
 const selectAnswer = (idx) => {
-  emit('answer-selected', idx);
+  emit("answer-selected", idx);
 };
 </script>
 
@@ -118,7 +96,7 @@ const selectAnswer = (idx) => {
     }
 
     .answer-button {
-      font-family: 'Noto Sans KR';
+      font-family: "Noto Sans KR";
       width: calc(100% - 60px);
       padding: 13px 0 13px 20px;
       text-align: left;

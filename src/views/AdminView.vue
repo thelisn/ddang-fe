@@ -28,18 +28,18 @@
 </template>
 
 <script setup>
-import { state, socket } from "@/socket";
 import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from "vue";
+import { socket } from "@/socket";
 import { getUserInfo, sortTeamMember } from "../utils/index";
+import axios from "axios";
+
 import LisnHeader from "@/components/LisnHeader.vue";
 import QuestionContainer from "@/components/admin/QuestionContainer.vue";
 import AnswerContainer from "@/components/admin/AnswerContainer.vue";
 import QuestionListContainer from "@/components/admin/QuestionListContainer.vue";
 import TeamContainer from "@/components/admin/TeamContainer.vue";
 import ButtonContainer from "@/components/admin/ButtonContainer.vue";
-import axios from "axios";
-import router from "@/router";
-import { getClass } from "@/utils";
+
 // 변수
 const questionData = ref(null);
 const currentQuestionData = ref(null);
@@ -123,8 +123,8 @@ const finishBtn = () => {
   if (confirm("정말 종료 하시겠습니까?")) {
     socket.emit("show-end-winner", (data) => {
       isEnd.value = true;
-
       questionData.value = data.questionData;
+
       currentQuestion.value = null;
       currentQuestionData.value = null;
     });

@@ -12,19 +12,17 @@
 </template>
 
 <script setup>
-import LisnHeader from "@/components/LisnHeader.vue";
-import TeamList from "@/components/waiting/TeamList.vue";
-import ActionButton from "@/components/waiting/ActionButton.vue";
-
-import { state, socket } from "@/socket";
-import { useStore } from "vuex";
+import { socket } from "@/socket";
 import { getUserInfo } from "@/utils";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import router from "@/router";
 import axios from "axios";
 
+import LisnHeader from "@/components/LisnHeader.vue";
+import TeamList from "@/components/waiting/TeamList.vue";
+import ActionButton from "@/components/waiting/ActionButton.vue";
+
 // 변수
-const store = useStore();
 const currentQuestion = ref(null);
 const teamData = ref(null);
 const isAdmin = ref(null);

@@ -15,14 +15,15 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
-import { state, socket } from '@/socket.js';
-import router from '@/router';
-import axios from 'axios';
-import LisnHeader from '@/components/LisnHeader.vue';
-import QuestionArea from '@/components/quiz/QuestionArea.vue';
-import AnswerArea from '@/components/quiz/AnswerArea.vue';
-import { getUserInfo } from '@/utils';
+import { onMounted, onBeforeUnmount, ref } from "vue";
+import { getUserInfo } from "@/utils";
+import { socket } from "@/socket.js";
+import router from "@/router";
+import axios from "axios";
+
+import LisnHeader from "@/components/LisnHeader.vue";
+import QuestionArea from "@/components/quiz/QuestionArea.vue";
+import AnswerArea from "@/components/quiz/AnswerArea.vue";
 
 const questionNumber = ref(null);
 const question = ref(null);
@@ -35,7 +36,7 @@ const userAnswerInfo = ref({});
 
 const selectAnswer = (idx) => {
   selectedAnswer.value = idx;
-  socket.emit('select-answer', {
+  socket.emit("select-answer", {
     answer: selectedAnswer.value,
     number: questionNumber.value,
     userInfo: userInfo.value,
@@ -44,35 +45,32 @@ const selectAnswer = (idx) => {
 
 onMounted(() => {
   userInfo.value = getUserInfo();
-  socket.on('join-quiz', (data) => {
+  socket.on("join-quiz", (data) => {
     answers.value = data.answers;
     question.value = data.question;
     questionNumber.value = data.number;
     isAlive.value = data.isAlive;
     isData.value = true;
     selectedAnswer.value = data.selectedAnswer;
-    userAnswerInfo.value = Object.groupBy(
-      data.userAnswerInfo,
-      ({ team }) => team
-    );
+    userAnswerInfo.value = Object.groupBy(data.userAnswerInfo, ({ team }) => team);
   });
-  socket.on('select-answer', (data) => {
+  socket.on("select-answer", (data) => {
     userAnswerInfo.value = Object.groupBy(data, ({ team }) => team);
   });
 
-  socket.on('show-answer', (data) => {
-    socket.emit('check-answer', {
+  socket.on("show-answer", (data) => {
+    socket.emit("check-answer", {
       userInfo: userInfo.value,
       number: data.currentQuestion,
       correctAnswer: data.correctAnswer,
     });
-    router.push({ path: '/result', state: { isRouter: true } });
+    router.push({ path: "/result", state: { isRouter: true } });
   });
 
   setTimeout(async () => {
     if (!isData.value) {
       await axios
-        .get('/api/quiz', {
+        .get("/api/quiz", {
           params: {
             userInfo: userInfo.value,
           },
@@ -92,9 +90,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  socket.off('join-quiz');
-  socket.off('show-answer');
-  socket.off('select-answer');
+  socket.off("join-quiz");
+  socket.off("show-answer");
+  socket.off("select-answer");
 });
 </script>
 

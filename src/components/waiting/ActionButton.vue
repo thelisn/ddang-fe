@@ -1,51 +1,21 @@
 <template>
   <div class="btn-area">
-    <button
-      v-if="!isAdmin && !currentQuestion"
-      class="userBtn waiting"
-      @click="joinQuiz"
-      disabled
-    >
-      대기중
-    </button>
-    <button
-      v-if="!isAdmin && currentQuestion"
-      class="userBtn"
-      @click="joinQuiz"
-      :class="getClass()"
-    >
-      입장
-    </button>
-    <button
-      v-if="isAdmin"
-      class="userBtn"
-      @click="joinAdminQuiz"
-      :class="getClass()"
-    >
-      Admin
-    </button>
+    <button v-if="!isAdmin && !currentQuestion" class="userBtn waiting" @click="joinQuiz" disabled>대기중</button>
+    <button v-if="!isAdmin && currentQuestion" class="userBtn" @click="joinQuiz" :class="getClass()">입장</button>
+    <button v-if="isAdmin" class="userBtn" @click="joinAdminQuiz" :class="getClass()">Admin</button>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from 'vue';
-import { getClass, getUserInfo } from '@/utils';
+import { defineEmits, defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  isAdmin: {
-    type: Boolean,
-    required: true,
-  },
-  currentQuestion: {
-    type: Object,
-    required: false,
-  },
-});
+const props = defineProps(["currentQuestion", "isAdmin"]);
 
-const emit = defineEmits(['joinQuiz', 'joinAdminQuiz']);
+const emit = defineEmits(["joinQuiz", "joinAdminQuiz"]);
 
-const joinQuiz = () => emit('joinQuiz');
-const joinAdminQuiz = () => emit('joinAdminQuiz');
+const joinQuiz = () => emit("joinQuiz");
+const joinAdminQuiz = () => emit("joinAdminQuiz");
 </script>
 
 <style lang="scss" scoped>
@@ -61,7 +31,7 @@ const joinAdminQuiz = () => emit('joinAdminQuiz');
   background-color: #111;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -8px;
     left: 0;

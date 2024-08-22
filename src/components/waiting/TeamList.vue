@@ -1,11 +1,6 @@
 <template>
   <ul class="team-container">
-    <li
-      class="team-wrap"
-      v-for="team in teamData"
-      :class="getClass(team[0].team)"
-      :key="team"
-    >
+    <li class="team-wrap" v-for="team in teamData" :class="getClass(team[0].team)" :key="team">
       <p class="team-title">{{ team[0].team }}</p>
       <ul class="user-wrap">
         <li class="user-data" v-for="member in team" :key="member">
@@ -18,23 +13,10 @@
 </template>
 
 <script setup>
-import { getClass, getUserInfo } from '@/utils';
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  teamData: {
-    type: Object,
-    required: true,
-  },
-  currentQuestion: {
-    type: Object,
-    required: false,
-  },
-  isAdmin: {
-    type: Boolean,
-    required: true,
-  },
-});
+const props = defineProps(["teamData", "currentQuestion", "isAdmin"]);
 </script>
 
 <style lang="scss" scoped>
@@ -109,7 +91,7 @@ const props = defineProps({
       background-color: transparent;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 12px;
         left: 0;

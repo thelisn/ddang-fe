@@ -1,31 +1,21 @@
 <template>
   <div>
-    <div
-      v-for="teamData in filteredTeamList"
-      :key="teamData.teamName"
-      class="winner-team-box"
-    >
+    <div v-for="teamData in filteredTeamList" :key="teamData.teamName" class="winner-team-box">
       <span class="winner-team">{{ teamData.teamName }}</span>
-      <button :class="`winner ${teamData.teamName}`">
-        <span
-          class="winners"
-          v-for="(item, idx) in teamData.members"
-          :key="idx"
-          >{{ item.name }}</span
-        >
+      <button :class="`winner ${getClass(teamData.teamName)}`">
+        <span class="winners" v-for="(item, idx) in teamData.members" :key="idx">{{ item.name }}</span>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { defineProps, computed } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  winnerData: Array,
-});
+const props = defineProps(["winnerData"]);
 
-const teamList = ['양재', '스포크', '디채', '모니모'];
+const teamList = ["양재", "스포크", "디채", "모니모"];
 
 const filteredTeamList = computed(() => {
   if (!props.winnerData) return [];
@@ -41,6 +31,9 @@ const filteredTeamList = computed(() => {
 
 <style scoped lang="scss">
 .winner-team-box {
+  position: relative;
+  display: flex;
+  align-items: center;
   margin-bottom: 40px;
   padding: 10px 10px 10px 0;
 
@@ -51,11 +44,15 @@ const filteredTeamList = computed(() => {
   }
 
   .winner {
+    position: absolute;
+    right: -20px;
     color: #fff;
+    width: calc(100% - 50px);
     font-size: 22px;
     text-align: left;
     padding: 12px 0px 13px 20px;
     border-radius: 20px 0 0 20px;
+    margin-left: -20px;
 
     .winners {
       margin-right: 10px;
