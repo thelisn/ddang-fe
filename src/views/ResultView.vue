@@ -5,52 +5,40 @@
 
     <QuestionSection :questionData="questionData" :checkAnswer="checkAnswer" />
     <div class="answer-area">
-      <CorrectAnswer :correctAnswerData="correctAnswerData" :correctUserData="correctUserData" />
-      <WrongAnswer :answerData="answerData" />
+      <CorrectAnswer :correctAnswerData="correctAnswerData" />
+      <WrongAnswer :answerData="answerData" :userAnswer="userAnswer" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { state, socket } from "@/socket";
-import router from "@/router";
+import { socket } from "@/socket";
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { getUserInfo } from "@/utils";
+import router from "@/router";
+import axios from "axios";
+
 import LisnHeader from "@/components/LisnHeader.vue";
 import QuestionSection from "@/components/result/QuestionSection.vue";
 import CorrectAnswer from "@/components/result/CorrectAnswer.vue";
 import WrongAnswer from "@/components/result/WrongAnswer.vue";
-import { getUserInfo } from "@/utils";
 
 // 변수
 const checkAnswer = ref(null);
 const userInfo = ref(null);
 const answerData = ref(null);
 const correctAnswerData = ref(null);
-const correctUserData = ref(null);
 const questionData = ref(null);
 const userAnswer = ref(null);
 const isLoading = ref(true);
+const isData = ref(false);
 
 // Life Cycle
 onMounted(() => {
   userInfo.value = getUserInfo();
 
   socket.on("check-answer", (data) => {
-    questionData.value = data.questionData;
-    answerData.value = data.answerData
-      .filter((v) => v.number !== data.correctAnswer)
-      .map((v) => {
-        return {
-          ...v,
-          userData: Object.groupBy(v.userData, ({ team }) => team),
-        };
-      });
-
-    correctAnswerData.value = data.answerData.filter((v) => v.number === data.correctAnswer)[0];
-    userAnswer.value = data.userAnswer;
-    checkAnswer.value = data.isCorrect;
-
-    isLoading.value = false;
+    getResultData(data);
   });
 
   socket.on("start-quiz", (data) => {
@@ -65,6 +53,14 @@ onMounted(() => {
       state: { isRouter: true, userData: data.userData },
     });
   });
+
+  // 새로고침 시 실행
+  setTimeout(async () => {
+    if (!isData.value) {
+      const { data } = await axios.get("/api/result", { params: { userInfo: userInfo.value } });
+      getResultData(data);
+    }
+  }, 500);
 });
 
 onBeforeUnmount(() => {
@@ -72,6 +68,25 @@ onBeforeUnmount(() => {
   socket.off("start-quiz");
   socket.off("show-end-winner");
 });
+
+const getResultData = (data) => {
+  questionData.value = data.questionData;
+  answerData.value = data.answerData
+    .filter((v) => v.number !== data.correctAnswer)
+    .map((v) => {
+      return {
+        ...v,
+        userData: Object.groupBy(v.userData, ({ team }) => team),
+      };
+    });
+
+  correctAnswerData.value = data.answerData.filter((v) => v.number === data.correctAnswer)[0];
+  userAnswer.value = data.userAnswer;
+  checkAnswer.value = data.isCorrect;
+
+  isLoading.value = false;
+  isData.value = true;
+};
 </script>
 
 <style scoped lang="scss">

@@ -6,11 +6,7 @@
     </div>
 
     <ul class="user-wrap">
-      <li
-        class="correct-answer-user"
-        v-for="(user, idx) in correctUserData"
-        :key="idx"
-      >
+      <li class="correct-answer-user" v-for="(user, idx) in correctAnswerData.userData" :key="idx">
         <div class="user-status" :class="getClass(user.team)"></div>
         <p class="user-name">{{ user.name }}</p>
       </li>
@@ -19,13 +15,10 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  correctAnswerData: Object,
-  correctUserData: Array,
-});
+const props = defineProps(["correctAnswerData"]);
 </script>
 
 <style scoped lang="scss">

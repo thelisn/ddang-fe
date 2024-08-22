@@ -24,9 +24,7 @@
 import { defineProps } from "vue";
 import { getClass } from "@/utils";
 
-const props = defineProps({
-  answerData: Array,
-});
+const props = defineProps(["answerData", "userAnswer"]);
 </script>
 
 <style scoped lang="scss">
