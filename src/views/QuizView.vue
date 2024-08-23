@@ -45,6 +45,7 @@ const selectAnswer = (idx) => {
 
 onMounted(() => {
   userInfo.value = getUserInfo();
+
   socket.on("join-quiz", (data) => {
     answers.value = data.answers;
     question.value = data.question;
@@ -65,6 +66,10 @@ onMounted(() => {
       correctAnswer: data.correctAnswer,
     });
     router.push({ path: "/result", state: { isRouter: true } });
+  });
+
+  socket.on("re-start-quiz", () => {
+    router.push({ path: "/waiting", state: { isRouter: true } });
   });
 
   setTimeout(async () => {

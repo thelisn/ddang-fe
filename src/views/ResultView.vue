@@ -54,6 +54,10 @@ onMounted(() => {
     });
   });
 
+  socket.on("re-start-quiz", () => {
+    router.push({ path: "/waiting", state: { isRouter: true } });
+  });
+
   // 새로고침 시 실행
   setTimeout(async () => {
     if (!isData.value) {
@@ -67,6 +71,7 @@ onBeforeUnmount(() => {
   socket.off("check-answer");
   socket.off("start-quiz");
   socket.off("show-end-winner");
+  socket.off("re-start-quiz");
 });
 
 const getResultData = (data) => {
