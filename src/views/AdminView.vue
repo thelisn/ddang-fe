@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, getCurrentInstance } from "vue";
+import { onBeforeUnmount, onMounted, ref, getCurrentInstance, computed } from "vue";
 import { socket } from "@/socket";
 import { getUserInfo, sortTeamMember } from "../utils/index";
 import axios from "axios";
@@ -55,101 +55,6 @@ const currentUser = ref(0);
 const userAnswerInfo = ref({});
 const isEnd = ref(false);
 const instance = getCurrentInstance();
-
-// 함수
-const showAnswer = async () => {
-  // 채점하고자 하는 문제 번호 파라미터로 전송
-  socket.emit("show-answer", {
-    userInfo: userInfo.value,
-    currentQuestion,
-  });
-
-  // 기존 열려있던 데이터 isFinshed true로
-  const number = currentQuestionData.value.number;
-  questionData.value[number - 1].isFinished = true;
-
-  currentQuestion.value = null;
-  currentQuestionData.value = null;
-};
-
-const startQuiz = async (question) => {
-  if (question.isStarted || isEnd.value) return false;
-
-  currentQuestion.value = question.number;
-
-  // 시작하고자 하는 퀴즈 번호 파라미터로 전송
-  socket.emit("start-quiz", {
-    userInfo: userInfo.value,
-    questionNum: question.number,
-  });
-
-  await axios.get("/api/admin").then((res) => {
-    questionData.value = res.data.questionData;
-    userData.value = res.data.userData;
-    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
-  });
-};
-
-const questionStatus = (data) => {
-  if (!data.isStarted) {
-    return "before";
-  } else {
-    if (data.isFinished) {
-      return null;
-    } else {
-      return "on";
-    }
-  }
-};
-
-const updatePage = async () => {
-  await axios.get("/api/admin").then((res) => {
-    questionData.value = res.data.questionData;
-    userData.value = res.data.userData;
-    if (res.data.currentQuestion) {
-      currentQuestion.value = res.data.currentQuestion;
-    }
-    currentUser.value = res.data.currentUser;
-    totalUser.value = res.data.totalUser;
-
-    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
-    isLoading.value = false;
-    teamData.value = sortTeamMember(userData.value);
-    instance?.proxy?.$forceUpdate();
-  });
-};
-
-const finishBtn = () => {
-  if (confirm("정말 종료 하시겠습니까?")) {
-    socket.emit("show-end-winner", (data) => {
-      isEnd.value = true;
-      questionData.value = data.questionData;
-
-      currentQuestion.value = null;
-      currentQuestionData.value = null;
-    });
-  }
-};
-
-const restartQuiz = async () => {
-  if (confirm("정말 재시작 하시겠습니까?")) {
-    socket.emit("re-start-quiz", () => {
-      isEnd.value = false;
-
-      updatePage();
-      currentQuestion.value = null;
-      currentQuestionData.value = null;
-    });
-  }
-};
-
-const revive = (data) => {
-  if (!data.isAlive) {
-    if (confirm("부활시키겠습니까?")) {
-      socket.emit("revive", data);
-    }
-  }
-};
 
 // Life Cycle
 onMounted(() => {
@@ -201,11 +106,11 @@ onMounted(() => {
   });
 
   // 새로고침 시 실행
-  setTimeout(async () => {
-    if (!isData.value) {
+  if (!isData.value) {
+    setTimeout(async () => {
       updatePage();
-    }
-  }, 500);
+    }, 500);
+  }
 });
 
 onBeforeUnmount(() => {
@@ -216,6 +121,103 @@ onBeforeUnmount(() => {
   socket.off("update-current-user");
   socket.off("join-quiz");
 });
+
+// 함수
+const showAnswer = async () => {
+  // 채점하고자 하는 문제 번호 파라미터로 전송
+  socket.emit("show-answer", {
+    userInfo: userInfo.value,
+    currentQuestion,
+  });
+
+  // 기존 열려있던 데이터 isFinshed true로
+  const number = currentQuestionData.value.number;
+  questionData.value[number - 1].isFinished = true;
+
+  currentQuestion.value = null;
+  currentQuestionData.value = null;
+};
+
+const startQuiz = async (question) => {
+  if (question.isStarted || isEnd.value) return false;
+
+  currentQuestion.value = question.number;
+
+  // 시작하고자 하는 퀴즈 번호 파라미터로 전송
+  socket.emit("start-quiz", {
+    userInfo: userInfo.value,
+    questionNum: question.number,
+  });
+
+  await axios.get("/api/admin").then(({ data }) => {
+    questionData.value = data.questionData;
+    userData.value = data.userData;
+    totalUser.value = data.totalUser;
+    currentQuestionData.value = data.questionData.filter((data) => data.number === currentQuestion.value)[0];
+    currentUser.value = data.currentUser;
+    teamData.value = sortTeamMember(userData.value);
+  });
+};
+
+const questionStatus = (data) => {
+  if (!data.isStarted) {
+    return "before";
+  } else {
+    if (data.isFinished) {
+      return null;
+    } else {
+      return "on";
+    }
+  }
+};
+
+const updatePage = async () => {
+  await axios.get("/api/admin").then((res) => {
+    questionData.value = res.data.questionData;
+    userData.value = res.data.userData;
+    if (res.data.currentQuestion) {
+      currentQuestion.value = res.data.currentQuestion;
+    }
+    currentUser.value = res.data.currentUser;
+    totalUser.value = res.data.totalUser;
+    currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
+    isLoading.value = false;
+    teamData.value = sortTeamMember(userData.value);
+    instance?.proxy?.$forceUpdate();
+  });
+};
+
+const finishBtn = () => {
+  if (confirm("정말 종료 하시겠습니까?")) {
+    socket.emit("show-end-winner", (data) => {
+      isEnd.value = true;
+      questionData.value = data.questionData;
+
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
+    });
+  }
+};
+
+const restartQuiz = async () => {
+  if (confirm("정말 재시작 하시겠습니까?")) {
+    socket.emit("re-start-quiz", () => {
+      isEnd.value = false;
+
+      updatePage();
+      currentQuestion.value = null;
+      currentQuestionData.value = null;
+    });
+  }
+};
+
+const revive = (data) => {
+  if (!data.isAlive) {
+    if (confirm("부활시키겠습니까?")) {
+      socket.emit("revive", data);
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,10 +1,6 @@
 <template>
   <div class="answer-container">
-    <p class="status">
-      {{ currentUser }} 명/{{ totalUser }} 명 ({{
-        Number.isNaN(Math.ceil(currentUser / totalUser) * 100) ? 0 : Math.ceil(currentUser / totalUser) * 100
-      }}%) 완료
-    </p>
+    <p class="status">{{ currentUser }} 명/{{ totalUser }} 명 ({{ totalPercentage }}%) 완료</p>
     <div class="status-view">
       <div class="enter-user-area">
         <ul v-for="(users, key, index) of userAnswerInfo" :key="`users-${index}`">
@@ -19,16 +15,16 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed } from "vue";
 import { getClass } from "@/utils";
 
-const props = defineProps({
-  currentUser: Number,
-  totalUser: Number,
-  userAnswerInfo: Object,
-});
-
+const props = defineProps(["currentUser", "totalUser", "userAnswerInfo"]);
 const emit = defineEmits(["show-answer"]);
+
+const totalPercentage = computed(() => {
+  const percentage = Math.ceil(props.currentUser / props.totalUser) * 100;
+  return Number.isNaN(percentage) ? 0 : percentage;
+});
 
 const emitShowAnswer = () => {
   emit("show-answer");
