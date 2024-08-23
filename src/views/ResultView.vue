@@ -4,6 +4,7 @@
     <LisnHeader />
 
     <QuestionSection :questionData="questionData" :checkAnswer="checkAnswer" />
+
     <div class="answer-area">
       <CorrectAnswer :correctAnswerData="correctAnswerData" />
       <WrongAnswer :answerData="answerData" :userAnswer="userAnswer" />
@@ -96,17 +97,21 @@ const getResultData = (data) => {
 
 <style scoped lang="scss">
 #result-page {
-  background-color: #111;
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
   padding: 0 20px;
-  min-height: 100vh;
-  position: relative;
+  min-height: 100dvh;
+  background-color: #111;
   overflow: hidden;
 
   .answer-area {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    flex: 1;
+    padding-bottom: 32px;
   }
 }
 </style>

@@ -15,7 +15,6 @@
 
     <QuestionListContainer
       :questionData="questionData"
-      :questionStatus="questionStatus"
       :isEnd="isEnd"
       @restartQuiz="restartQuiz"
       @startQuiz="startQuiz"
@@ -23,7 +22,12 @@
 
     <TeamContainer :teamData="teamData" @revive="revive" />
 
-    <ButtonContainer :isEnd="isEnd" @finish="finishBtn" @restart="restartQuiz" />
+    <ButtonContainer
+      :isEnd="isEnd"
+      :isQuestionEndStatus="isQuestionEndStatus"
+      @finish="finishBtn"
+      @restart="restartQuiz"
+    />
   </div>
 </template>
 
@@ -48,18 +52,20 @@ const userData = ref(null);
 const teamData = ref(null);
 const isAlive = ref(null);
 const isData = ref(false);
-const userInfo = ref();
 const isLoading = ref(true);
+const isEnd = ref(false);
 const totalUser = ref(0);
 const currentUser = ref(0);
 const userAnswerInfo = ref({});
-const isEnd = ref(false);
+const userInfo = getUserInfo();
 const instance = getCurrentInstance();
+
+const isQuestionEndStatus = computed(() => {
+  return currentQuestionData.value && currentQuestion.value;
+});
 
 // Life Cycle
 onMounted(() => {
-  userInfo.value = getUserInfo();
-
   // 처음 페이지 진입 시 실행
   socket.on("join-admin-quiz", (data) => {
     if (data.currentQuestion) {
@@ -125,9 +131,8 @@ onBeforeUnmount(() => {
 // 함수
 const showAnswer = async () => {
   // 채점하고자 하는 문제 번호 파라미터로 전송
-  socket.emit("show-answer", {
-    userInfo: userInfo.value,
-    currentQuestion,
+  socket.emit("show-answer", { userInfo: userInfo.value, currentQuestion }, (data) => {
+    teamData.value = sortTeamMember(data);
   });
 
   // 기존 열려있던 데이터 isFinshed true로
@@ -190,9 +195,11 @@ const updatePage = async () => {
 const finishBtn = () => {
   if (confirm("정말 종료 하시겠습니까?")) {
     socket.emit("show-end-winner", (data) => {
+      questionData.value = data.questionData; // 버튼을 완료 > 종료로 바뀌기 위해.
       isEnd.value = true;
-      questionData.value = data.questionData;
 
+      //초기화
+      userAnswerInfo.value = {};
       currentQuestion.value = null;
       currentQuestionData.value = null;
     });
@@ -202,9 +209,9 @@ const finishBtn = () => {
 const restartQuiz = async () => {
   if (confirm("정말 재시작 하시겠습니까?")) {
     socket.emit("re-start-quiz", () => {
-      isEnd.value = false;
-
       updatePage();
+
+      isEnd.value = false;
       currentQuestion.value = null;
       currentQuestionData.value = null;
     });
@@ -212,10 +219,10 @@ const restartQuiz = async () => {
 };
 
 const revive = (data) => {
-  if (!data.isAlive) {
-    if (confirm("부활시키겠습니까?")) {
-      socket.emit("revive", data);
-    }
+  if (!data.isAlive && !isQuestionEndStatus.value) return;
+
+  if (confirm("부활시키겠습니까?")) {
+    socket.emit("revive", data);
   }
 };
 </script>

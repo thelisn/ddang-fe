@@ -6,6 +6,7 @@
       </li>
     </ul>
   </div>
+
   <div class="answer-area" :class="!isAlive ? 'dead' : null">
     <ul>
       <li class="answer-list" v-for="(answer, idx) in answers" :key="idx">
@@ -23,7 +24,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed } from "vue";
 import { getClass } from "@/utils";
 
 const props = defineProps(["answers", "selectedAnswer", "isAlive", "userAnswerInfo"]);
@@ -38,7 +39,9 @@ const selectAnswer = (idx) => {
 .enter-user-area {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
+  min-height: 38px;
+  margin-bottom: 15px;
 
   & > ul {
     display: flex;
@@ -56,12 +59,10 @@ const selectAnswer = (idx) => {
     }
   }
 }
+
 .answer-area {
-  width: 100%;
+  margin-top: auto;
   margin-right: -20px;
-  position: absolute;
-  padding-bottom: 20px;
-  bottom: 0;
 
   &.dead {
     .answer-number {

@@ -13,7 +13,8 @@ const props = defineProps(["questionNumber", "question"]);
 
 <style scoped lang="scss">
 .question-area {
-  padding-top: 120px;
+  padding-top: 60px;
+
   .question-number {
     line-height: 77px;
     font-size: 48px;

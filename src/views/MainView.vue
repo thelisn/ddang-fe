@@ -6,14 +6,15 @@
 </template>
 
 <script setup>
-import TheHeading from '@/components/main/TheHeading.vue';
-import AuthForm from '@/components/main/AuthForm.vue';
+import TheHeading from "@/components/main/TheHeading.vue";
+import AuthForm from "@/components/main/AuthForm.vue";
 </script>
 
 <style scoped lang="scss">
 .main-container {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   background-color: #111;
-  height: 100vh;
+  height: 100dvh;
 }
 </style>

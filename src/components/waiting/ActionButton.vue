@@ -29,15 +29,17 @@ const joinAdminQuiz = () => emit("joinAdminQuiz");
   padding: 20px 0;
   z-index: 100;
   background-color: #111;
+  isolation: isolate;
 
   &::before {
     content: "";
     position: absolute;
-    top: -8px;
+    bottom: 100%;
     left: 0;
     width: 100%;
     height: 20px;
     background: linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, #111 100%);
+    z-index: 999;
   }
 
   .userBtn {
@@ -50,6 +52,8 @@ const joinAdminQuiz = () => emit("joinAdminQuiz");
     &.waiting {
       background-color: #555;
       color: #111;
+      user-select: none;
+      pointer-events: none;
     }
   }
 

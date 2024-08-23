@@ -1,113 +1,115 @@
 <template>
-  <div class="input-wrap">
-    <input
-      id="lisn-input"
-      type="text"
-      v-model="input"
-      name="id"
-      :disabled="isLoggedIn"
-    />
-    <label for="lisn-input" class="input-label">이름</label>
-    <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
-    <button v-else class="login-btn" @click="rejoin">재입장하기</button>
-  </div>
+  <form @submit.prevent="" class="form">
+    <div class="input-wrap">
+      <label for="lisn-input" class="input-label">이름</label>
+      <input id="lisn-input" type="text" v-model="input" name="id" :disabled="isLoggedIn" />
+    </div>
+
+    <div class="button-wrap">
+      <button v-if="!isLoggedIn" class="login-btn" @click="login">로그인</button>
+      <button v-else class="login-btn" @click="rejoin">재입장하기</button>
+    </div>
+  </form>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { socket } from '@/socket';
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { socket } from "@/socket";
 
 const router = useRouter();
 const store = useStore();
-const input = ref('');
+
+const input = ref("");
 const isLoggedIn = ref(false);
 
 const login = () => {
-  socket.emit('login', input.value.toUpperCase());
+  socket.emit("login", input.value.toUpperCase());
 };
 
 const setLocalStorage = (userInfoData) => {
-  const hasLocalData = localStorage.getItem('userInfo');
+  const hasLocalData = localStorage.getItem("userInfo");
 
-  if (!hasLocalData)
-    localStorage.setItem('userInfo', JSON.stringify(userInfoData));
+  if (!hasLocalData) localStorage.setItem("userInfo", JSON.stringify(userInfoData));
 
-  router.push({ path: '/waiting', state: { isRouter: true } });
+  router.push({ path: "/waiting", state: { isRouter: true } });
 };
 
 const rejoin = () => {
-  let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  let userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  socket.emit('rejoin', userInfo);
-  router.push({ path: '/waiting', state: { isRouter: true } });
+  socket.emit("rejoin", userInfo);
+  router.push({ path: "/waiting", state: { isRouter: true } });
 };
 
 onMounted(() => {
-  isLoggedIn.value = !!localStorage.getItem('userInfo');
+  isLoggedIn.value = !!localStorage.getItem("userInfo");
 
   //@NOTE 로그인 후 다시 메인으로 왔을 경우 waiting으로 보낼지 리조인 만들지 수정 필요.
-  socket.on('login', (data) => {
+  socket.on("login", (data) => {
     if (data.error === true) {
       alert(data.msg);
     } else {
       setLocalStorage(data.userData);
-      store.commit('setUserInfo', data.userData);
+      store.commit("setUserInfo", data.userData);
     }
   });
 });
 
 onBeforeUnmount(() => {
-  socket.off('login');
+  socket.off("login");
 });
 </script>
 
 <style scoped lang="scss">
-.input-wrap {
+.form {
   position: relative;
-  height: 70vh;
-  padding: 20px;
-  padding-top: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  padding: 0 20px 20px;
 
-  #lisn-input {
-    width: 100%;
-    height: 56px;
-    border-bottom: 4px solid #999;
-    background-color: transparent;
-    transition: 0.3s all;
-    color: #fff;
-    font-size: 22px;
-    font-weight: 500;
+  .input-wrap {
+    padding-top: 100px;
 
-    &:focus {
-      border-bottom: 4px solid #fff;
+    #lisn-input {
+      width: 100%;
+      height: 56px;
+      font-size: 22px;
+      font-weight: 500;
+      color: #fff;
+      border-bottom: 4px solid #999;
+      background-color: transparent;
+
+      transition: 0.3s all;
+
+      &:focus {
+        border-color: #fff;
+      }
+    }
+
+    .input-label {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
     }
   }
 
-  .input-label {
-    position: absolute;
-    height: 26px;
-    top: 174px;
-    left: 20px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
+  .button-wrap {
+    .login-btn {
+      width: 100%;
+      height: 60px;
+      font-family: "Noto Sans KR", sans-serif;
+      font-weight: 500;
+      font-size: 22px;
+      color: #111;
+      border-radius: 20px;
+      background-color: #fff;
+      cursor: pointer;
+    }
   }
-}
-
-.login-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: calc(100% - 40px);
-  height: 60px;
-  border-radius: 20px;
-  font-size: 22px;
-  background-color: #fff;
-  color: #111;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
 }
 </style>

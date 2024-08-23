@@ -29,7 +29,9 @@ const props = defineProps(["answerData", "userAnswer"]);
 
 <style scoped lang="scss">
 .wrong-answer-wrap {
-  margin-top: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   .wrong-answer {
     display: flex;

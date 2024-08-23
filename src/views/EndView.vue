@@ -1,6 +1,7 @@
 <template>
+  <LisnHeader />
+
   <div id="end-page">
-    <LisnHeader />
     <EndMessage />
     <WinnerTeam :winnerData="winnerData" />
     <LoserTeam :isAliveData="isAliveData" />
@@ -58,8 +59,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 #end-page {
+  min-height: calc(100dvh - 62px);
   background-color: #111;
-  padding: 10px 20px 0;
-  min-height: 100vh;
 }
 </style>

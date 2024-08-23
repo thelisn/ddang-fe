@@ -9,21 +9,20 @@
 
 <style scoped lang="scss">
 .end-container {
-  margin-top: 58px;
-  padding-bottom: 32px;
+  padding-inline: 20px;
+  margin-block: 62px 40px;
 
   .end-message {
-    margin-bottom: 40px;
-
     .end-title {
       font-size: 48px;
+      line-height: 77px;
       color: #fff;
     }
 
     .end-subtitle {
+      margin-top: 4px;
       font-size: 22px;
       font-weight: bold;
-      margin: 15px 0 30px;
       color: #1c77ff;
     }
   }

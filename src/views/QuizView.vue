@@ -106,7 +106,13 @@ onBeforeUnmount(() => {
   position: relative;
   background-color: #111;
   padding: 0 20px;
-  min-height: 100vh;
-  overflow: hidden;
+
+  .lisn-quiz-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-bottom: 32px;
+    min-height: 100dvh;
+  }
 }
 </style>

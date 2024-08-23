@@ -17,14 +17,7 @@
 <script setup>
 import { defineEmits, defineProps } from "vue";
 
-// Define props
-const props = defineProps({
-  questionData: Array,
-  currentQuestion: Number,
-  isEnd: Boolean,
-});
-
-// Define emits
+const props = defineProps(["questionData", "currentQuestion", "isEnd"]);
 const emit = defineEmits(["start-quiz"]);
 
 const startButton = (question) => {

@@ -27,7 +27,7 @@ const currentQuestion = ref(null);
 const teamData = ref(null);
 const isAdmin = ref(null);
 const isData = ref(false);
-const userInfo = ref(null);
+const userInfo = ref(getUserInfo());
 
 // 함수
 const joinQuiz = () => {
@@ -43,8 +43,6 @@ const joinAdminQuiz = () => {
 
 // Life Cycle
 onMounted(() => {
-  userInfo.value = getUserInfo();
-
   socket.on("login", (data) => {
     currentQuestion.value = data.currentQuestion;
 
@@ -64,14 +62,6 @@ onMounted(() => {
     isData.value = true;
   });
 
-  socket.on("start-quiz", (data) => {
-    currentQuestion.value = data;
-  });
-
-  socket.on("show-answer", (data) => {
-    currentQuestion.value = null;
-  });
-
   socket.on("rejoin", (data) => {
     currentQuestion.value = data.currentQuestion;
     let teams = {};
@@ -86,6 +76,18 @@ onMounted(() => {
 
     teamData.value = teams;
     isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
+  });
+
+  socket.on("start-quiz", (data) => {
+    currentQuestion.value = data;
+  });
+
+  socket.on("show-answer", () => {
+    currentQuestion.value = null;
+  });
+
+  socket.on("show-end-winner", () => {
+    currentQuestion.value = null;
   });
 
   setTimeout(async () => {
@@ -116,14 +118,16 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   socket.off("login");
+  socket.off("rejoin");
   socket.off("start-quiz");
   socket.off("show-answer");
-  socket.off("rejoin");
+  socket.off("show-end-winner");
 });
 </script>
+
 <style lang="scss" scoped>
 #waiting-room {
-  height: calc(100vh - 100px);
+  height: calc(100dvh - 100px);
   background-color: #111;
   padding: 0 20px 120px;
 }
