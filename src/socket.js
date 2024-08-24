@@ -8,11 +8,12 @@ export const state = reactive({
   userName: null,
   isAdmin: false,
   fooEvents: [],
-  barEvents: []
+  barEvents: [],
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = "http://quiz.thelisn.com:3100";
+const URL = process.env.VUE_APP_API_URL;
+// const URL = "https://port-0-ddang-api-lzqe79pmd8a5a76c.sel4.cloudtype.app";
 
 export const socket = io(URL);
 
@@ -32,10 +33,9 @@ socket.on("login-success", (data) => {
   state.loginError = false;
   state.userName = data.id;
 
-  if (data.userType === 'admin') {
+  if (data.userType === "admin") {
     state.isAdmin = true;
   } else {
     state.isUser = true;
   }
 });
-
