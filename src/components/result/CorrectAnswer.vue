@@ -6,11 +6,7 @@
     </div>
 
     <ul class="user-wrap">
-      <li
-        class="correct-answer-user"
-        v-for="(user, idx) in correctUserData"
-        :key="idx"
-      >
+      <li class="correct-answer-user" v-for="(user, idx) in correctAnswerData.userData" :key="idx">
         <div class="user-status" :class="getClass(user.team)"></div>
         <p class="user-name">{{ user.name }}</p>
       </li>
@@ -19,41 +15,54 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  correctAnswerData: Object,
-  correctUserData: Array,
-});
+const props = defineProps(["correctAnswerData"]);
 </script>
 
 <style scoped lang="scss">
 .correct-answer-section {
   .correct-answer-wrap {
     position: relative;
-    margin-top: 38px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 18px;
+    isolation: isolate;
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 60px;
+      width: calc(100% - 40px);
+      height: 100%;
+      background-color: #1c77ff;
+      border-radius: 20px 0 0 20px;
+      z-index: -1;
+    }
 
     .answer-number {
-      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      line-height: 1.6;
       font-size: 22px;
+      color: #fff;
     }
 
     .selected-text {
-      position: absolute;
-      right: -20px;
       color: #fff;
-      width: calc(100% - 40px);
+      margin-left: 20px;
+      padding: 0;
+      line-height: 1.6;
       font-size: 22px;
       text-align: left;
-      background-color: #1c77ff;
-      padding: 12px 0px 13px 20px;
-      border-radius: 20px 0 0 20px;
-      margin-left: -20px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      background-color: transparent;
     }
   }
 

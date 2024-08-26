@@ -27,14 +27,14 @@
 import { defineProps } from 'vue';
 import { getClass } from '@/utils';
 
-const props = defineProps({
-  answerData: Array,
-});
+const props = defineProps(["answerData", "userAnswer"]);
 </script>
 
 <style scoped lang="scss">
 .wrong-answer-wrap {
-  margin-top: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   .wrong-answer {
     display: flex;

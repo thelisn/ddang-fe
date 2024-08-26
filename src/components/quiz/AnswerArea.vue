@@ -6,20 +6,14 @@
       </li>
     </ul>
   </div>
+
   <div class="answer-area" :class="!isAlive ? 'dead' : null">
     <ul>
       <li class="answer-list" v-for="(answer, idx) in answers" :key="idx">
         <span class="answer-number">{{ idx + 1 }}</span>
         <button
           class="answer-button"
-          :class="[
-            getClass(),
-            selectedAnswer === idx + 1
-              ? 'selected'
-              : selectedAnswer
-              ? 'not-selected'
-              : null,
-          ]"
+          :class="[getClass(), selectedAnswer === idx + 1 ? 'selected' : selectedAnswer ? 'not-selected' : null]"
           @click="selectAnswer(idx + 1)"
         >
           {{ answer.text }}
@@ -30,29 +24,14 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps, defineEmits, computed } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  answers: {
-    type: Array,
-    required: true,
-  },
-  selectedAnswer: {
-    type: Number,
-    required: true,
-  },
-  isAlive: {
-    type: Boolean,
-    required: true,
-  },
-  userAnswerInfo: Object,
-});
-
-const emit = defineEmits(['answer-selected']);
+const props = defineProps(["answers", "selectedAnswer", "isAlive", "userAnswerInfo"]);
+const emit = defineEmits(["answer-selected"]);
 
 const selectAnswer = (idx) => {
-  emit('answer-selected', idx);
+  emit("answer-selected", idx);
 };
 </script>
 
@@ -60,7 +39,9 @@ const selectAnswer = (idx) => {
 .enter-user-area {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
+  min-height: 38px;
+  margin-bottom: 15px;
 
   & > ul {
     display: flex;
@@ -78,12 +59,10 @@ const selectAnswer = (idx) => {
     }
   }
 }
+
 .answer-area {
-  width: 100%;
+  margin-top: auto;
   margin-right: -20px;
-  position: absolute;
-  padding-bottom: 20px;
-  bottom: 0;
 
   &.dead {
     .answer-number {
@@ -118,7 +97,7 @@ const selectAnswer = (idx) => {
     }
 
     .answer-button {
-      font-family: 'Noto Sans KR';
+      font-family: "Noto Sans KR";
       width: calc(100% - 60px);
       padding: 13px 0 13px 20px;
       text-align: left;

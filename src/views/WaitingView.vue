@@ -16,24 +16,22 @@
 </template>
 
 <script setup>
-import LisnHeader from '@/components/LisnHeader.vue';
-import TeamList from '@/components/waiting/TeamList.vue';
-import ActionButton from '@/components/waiting/ActionButton.vue';
+import { socket } from "@/socket";
+import { getUserInfo } from "@/utils";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import router from "@/router";
+import axios from "axios";
 
-import { state, socket } from '@/socket';
-import { useStore } from 'vuex';
-import { getUserInfo } from '@/utils';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import router from '@/router';
-import axios from 'axios';
+import LisnHeader from "@/components/LisnHeader.vue";
+import TeamList from "@/components/waiting/TeamList.vue";
+import ActionButton from "@/components/waiting/ActionButton.vue";
 
 // 변수
-const store = useStore();
 const currentQuestion = ref(null);
 const teamData = ref(null);
 const isAdmin = ref(null);
 const isData = ref(false);
-const userInfo = ref(null);
+const userInfo = ref(getUserInfo());
 
 // 함수
 const joinQuiz = () => {
@@ -49,9 +47,8 @@ const joinAdminQuiz = () => {
 
 // Life Cycle
 onMounted(() => {
-  userInfo.value = getUserInfo();
 
-  socket.on('login', (data) => {
+  socket.on("login", (data) => {
     currentQuestion.value = data.currentQuestion;
 
     let teams = {};
@@ -70,15 +67,7 @@ onMounted(() => {
     isData.value = true;
   });
 
-  socket.on('start-quiz', (data) => {
-    currentQuestion.value = data;
-  });
-
-  socket.on('show-answer', (data) => {
-    currentQuestion.value = null;
-  });
-
-  socket.on('rejoin', (data) => {
+  socket.on("rejoin", (data) => {
     currentQuestion.value = data.currentQuestion;
     let teams = {};
 
@@ -92,6 +81,18 @@ onMounted(() => {
 
     teamData.value = teams;
     isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
+  });
+
+  socket.on("start-quiz", (data) => {
+    currentQuestion.value = data;
+  });
+
+  socket.on("show-answer", () => {
+    currentQuestion.value = null;
+  });
+
+  socket.on("show-end-winner", () => {
+    currentQuestion.value = null;
   });
 
   setTimeout(async () => {
@@ -121,15 +122,17 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  socket.off('login');
-  socket.off('start-quiz');
-  socket.off('show-answer');
-  socket.off('rejoin');
+  socket.off("login");
+  socket.off("rejoin");
+  socket.off("start-quiz");
+  socket.off("show-answer");
+  socket.off("show-end-winner");
 });
 </script>
+
 <style lang="scss" scoped>
 #waiting-room {
-  height: calc(100vh - 100px);
+  height: calc(100dvh - 100px);
   background-color: #111;
   padding: 0 20px 120px;
 }

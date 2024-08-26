@@ -8,8 +8,8 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-import { getClass } from '@/utils';
+import { defineProps } from "vue";
+import { getClass } from "@/utils";
 
 const props = defineProps({
   isAliveData: Array,
@@ -20,25 +20,25 @@ const props = defineProps({
 .loser-wrap {
   display: flex;
   flex-wrap: wrap;
+  gap: 22px 12px;
   margin-left: 60px;
+  padding-inline: 30px 20px;
 
   .loser {
     display: flex;
-    margin-top: 22px;
     align-items: center;
-    margin-right: 12px;
+    gap: 9px;
 
     .user-status {
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      margin-right: 9px;
     }
 
     .user-name {
-      color: #fff;
       font-size: 16px;
       font-weight: 500;
+      color: #fff;
     }
   }
 }

@@ -1,31 +1,21 @@
 <template>
-  <div>
-    <div
-      v-for="teamData in filteredTeamList"
-      :key="teamData.teamName"
-      class="winner-team-box"
-    >
+  <div class="winner-wrap">
+    <div v-for="teamData in filteredTeamList" :key="teamData.teamName" class="winner-team-box">
       <span class="winner-team">{{ teamData.teamName }}</span>
-      <button :class="`winner ${teamData.teamName}`">
-        <span
-          class="winners"
-          v-for="(item, idx) in teamData.members"
-          :key="idx"
-          >{{ item.name }}</span
-        >
-      </button>
+      <div :class="`winner ${getClass(teamData.teamName)}`">
+        <span class="winners" v-for="(item, idx) in teamData.members" :key="idx">{{ item.name }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { defineProps, computed } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  winnerData: Array,
-});
+const props = defineProps(["winnerData"]);
 
-const teamList = ['양재', '스포크', '디채', '모니모'];
+const teamList = ["양재", "스포크", "디채", "모니모"];
 
 const filteredTeamList = computed(() => {
   if (!props.winnerData) return [];
@@ -40,25 +30,43 @@ const filteredTeamList = computed(() => {
 </script>
 
 <style scoped lang="scss">
-.winner-team-box {
+.winner-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   margin-bottom: 40px;
-  padding: 10px 10px 10px 0;
+  padding-left: 20px;
 
-  .winner-team {
-    color: #fff;
-    font-size: 18px;
-    margin-right: 35px;
-  }
+  .winner-team-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
 
-  .winner {
-    color: #fff;
-    font-size: 22px;
-    text-align: left;
-    padding: 12px 0px 13px 20px;
-    border-radius: 20px 0 0 20px;
+    .winner-team {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 16px;
+      line-height: 29px;
+      font-size: 18px;
+      color: #fff;
+    }
 
-    .winners {
-      margin-right: 10px;
+    .winner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 1;
+      text-align: left;
+      padding: 12px 0px 13px 20px;
+      border-radius: 20px 0 0 20px;
+
+      .winners {
+        line-height: 35px;
+        font-size: 22px;
+        color: #fff;
+      }
     }
   }
 }

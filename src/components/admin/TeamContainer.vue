@@ -1,11 +1,6 @@
 <template>
   <div class="team-container">
-    <div
-      v-for="(team, index) in teams"
-      :key="index"
-      class="team-wrap"
-      :class="team.class"
-    >
+    <div v-for="(team, index) in teams" :key="index" class="team-wrap" :class="team.class">
       <p class="team-title">{{ team.title }}</p>
       <ul class="user-wrap">
         <li
@@ -24,7 +19,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   teamData: {
@@ -33,13 +28,13 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['revive']);
+const emit = defineEmits(["revive"]);
 
 const teams = [
-  { title: '양재', class: 'yangjae' },
-  { title: '스포크', class: 'spoke' },
-  { title: '디채', class: 'dichae' },
-  { title: '모니모', class: 'monimo' },
+  { title: "양재", class: "yangjae" },
+  { title: "스포크", class: "spoke" },
+  { title: "디채", class: "dichae" },
+  { title: "모니모", class: "monimo" },
 ];
 </script>
 
@@ -48,7 +43,7 @@ const teams = [
   margin-top: 62px;
   color: #fff;
   height: 100%;
-  margin-bottom: 100px;
+  margin-bottom: 200px;
 
   .team-wrap {
     margin-top: 50px;
@@ -144,7 +139,7 @@ const teams = [
       background-color: transparent;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 12px;
         left: 0;
@@ -166,7 +161,7 @@ const teams = [
           }
 
           &::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 50%;
             left: 50%;

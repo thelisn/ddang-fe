@@ -1,51 +1,21 @@
 <template>
   <div class="btn-area">
-    <button
-      v-if="!isAdmin && !currentQuestion"
-      class="userBtn waiting"
-      @click="joinQuiz"
-      disabled
-    >
-      대기중
-    </button>
-    <button
-      v-if="!isAdmin && currentQuestion"
-      class="userBtn"
-      @click="joinQuiz"
-      :class="getClass()"
-    >
-      입장
-    </button>
-    <button
-      v-if="isAdmin"
-      class="userBtn"
-      @click="joinAdminQuiz"
-      :class="getClass()"
-    >
-      Admin
-    </button>
+    <button v-if="!isAdmin && !currentQuestion" class="userBtn waiting" @click="joinQuiz" disabled>대기중</button>
+    <button v-if="!isAdmin && currentQuestion" class="userBtn" @click="joinQuiz" :class="getClass()">입장</button>
+    <button v-if="isAdmin" class="userBtn" @click="joinAdminQuiz" :class="getClass()">Admin</button>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from 'vue';
-import { getClass, getUserInfo } from '@/utils';
+import { defineEmits, defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  isAdmin: {
-    type: Boolean,
-    required: true,
-  },
-  currentQuestion: {
-    type: Object,
-    required: false,
-  },
-});
+const props = defineProps(["currentQuestion", "isAdmin"]);
 
-const emit = defineEmits(['joinQuiz', 'joinAdminQuiz']);
+const emit = defineEmits(["joinQuiz", "joinAdminQuiz"]);
 
-const joinQuiz = () => emit('joinQuiz');
-const joinAdminQuiz = () => emit('joinAdminQuiz');
+const joinQuiz = () => emit("joinQuiz");
+const joinAdminQuiz = () => emit("joinAdminQuiz");
 </script>
 
 <style lang="scss" scoped>
@@ -59,15 +29,17 @@ const joinAdminQuiz = () => emit('joinAdminQuiz');
   padding: 20px 0;
   z-index: 100;
   background-color: #111;
+  isolation: isolate;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: -8px;
+    bottom: 100%;
     left: 0;
     width: 100%;
     height: 20px;
     background: linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, #111 100%);
+    z-index: 999;
   }
 
   .userBtn {
@@ -80,6 +52,8 @@ const joinAdminQuiz = () => emit('joinAdminQuiz');
     &.waiting {
       background-color: #555;
       color: #111;
+      user-select: none;
+      pointer-events: none;
     }
   }
 

@@ -5,19 +5,17 @@
       <p class="question-text">{{ questionData.question }}</p>
     </div>
     <div class="inform-text">
-      <p v-if="checkAnswer" class="inform-correct">정답입니다!</p>
-      <p v-if="!checkAnswer" class="inform-wrong">틀렸습니다 ...</p>
+      <p :class="checkAnswer ? 'inform-correct' : 'inform-wrong'">
+        {{ checkAnswer ? "정답입니다!" : "틀렸습니다 ..." }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
 
-const props = defineProps({
-  questionData: Object,
-  checkAnswer: Boolean,
-});
+const props = defineProps(["questionData", "checkAnswer"]);
 </script>
 
 <style scoped lang="scss">

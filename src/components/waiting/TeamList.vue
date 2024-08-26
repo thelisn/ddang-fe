@@ -1,11 +1,6 @@
 <template>
   <ul class="team-container">
-    <li
-      class="team-wrap"
-      v-for="team in teamData"
-      :class="getClass(team[0].team)"
-      :key="team"
-    >
+    <li class="team-wrap" v-for="team in teamData" :class="getClass(team[0].team)" :key="team">
       <p class="team-title">{{ team[0].team }}</p>
       <ul class="user-wrap">
         <li class="user-data" v-for="member in team" :key="member">
@@ -18,34 +13,22 @@
 </template>
 
 <script setup>
-import { getClass, getUserInfo } from '@/utils';
-import { defineProps } from 'vue';
+import { defineProps } from "vue";
+import { getClass } from "@/utils";
 
-const props = defineProps({
-  teamData: {
-    type: Object,
-    required: true,
-  },
-  currentQuestion: {
-    type: Object,
-    required: false,
-  },
-  isAdmin: {
-    type: Boolean,
-    required: true,
-  },
-});
+const props = defineProps(["teamData", "currentQuestion", "isAdmin"]);
 </script>
 
 <style lang="scss" scoped>
 .team-container {
-  .team-wrap {
-    margin-top: 50px;
-    background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-block: 90px 120px;
+  min-height: 100dvh;
 
-    &:first-child {
-      margin-top: 32px;
-    }
+  .team-wrap {
+    background-color: transparent;
 
     &.yangjae {
       .user-wrap {
@@ -99,30 +82,31 @@ const props = defineProps({
       font-size: 22px;
       color: #fff;
       font-weight: bold;
+      margin-bottom: 11px;
     }
 
     .user-wrap {
+      position: relative;
       display: flex;
       flex-wrap: wrap;
-      position: relative;
-      padding-left: 26px;
+      gap: 20px 12px;
+      padding: 11px 0 13px 32px;
       background-color: transparent;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 12px;
         left: 0;
-        height: 100%;
+        top: 0;
         width: 10px;
+        height: 100%;
+        min-height: 16px;
         border-radius: 20px;
       }
 
       .user-data {
         display: flex;
-        margin-top: 22px;
         align-items: center;
-        margin-right: 12px;
 
         .user-status {
           width: 16px;
