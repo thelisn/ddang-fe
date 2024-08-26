@@ -3,9 +3,15 @@
     <p class="status">{{ currentUser }} 명/{{ totalUser }} 명 ({{ totalPercentage }}%) 완료</p>
     <div class="status-view">
       <div class="enter-user-area">
-        <ul v-for="(users, key, index) of userAnswerInfo" :key="`users-${index}`">
+        <ul
+          v-for="(users, key, index) of userAnswerInfo"
+          :key="`users-${index}`"
+        >
           <li v-for="(user, userIndex) of users" :key="`user-${userIndex}`">
-            <div class="circle" :class="[!user.answer && 'blank', getClass(key)]" />
+            <div
+              class="circle"
+              :class="[!user.answer && 'blank', getClass(key)]"
+            />
           </li>
         </ul>
       </div>
@@ -15,6 +21,7 @@
 </template>
 
 <script setup>
+
 import { defineProps, defineEmits, computed } from "vue";
 import { getClass } from "@/utils";
 
@@ -27,7 +34,7 @@ const totalPercentage = computed(() => {
 });
 
 const emitShowAnswer = () => {
-  emit("show-answer");
+  emit('show-answer');
 };
 </script>
 

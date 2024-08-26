@@ -10,7 +10,10 @@
       <button class="wrong-text">{{ answer.text }}</button>
 
       <div v-if="Object.keys(answer.userData).length" class="user-state-wrap">
-        <ul v-for="(users, key, index) of answer.userData" :key="`users-${index}`">
+        <ul
+          v-for="(users, key, index) of answer.userData"
+          :key="`users-${index}`"
+        >
           <li v-for="(_, userIndex) of users" :key="`user-${userIndex}`">
             <div class="circle" :class="getClass(key)" />
           </li>
@@ -21,8 +24,8 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
-import { getClass } from "@/utils";
+import { defineProps } from 'vue';
+import { getClass } from '@/utils';
 
 const props = defineProps(["answerData", "userAnswer"]);
 </script>
@@ -42,7 +45,7 @@ const props = defineProps(["answerData", "userAnswer"]);
       isolation: isolate;
 
       &::before {
-        content: "";
+        content: '';
         display: block;
         position: absolute;
         left: 60px;

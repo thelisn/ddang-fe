@@ -1,7 +1,11 @@
 <template>
   <div id="waiting-room">
     <LisnHeader />
-    <TeamList :teamData="teamData" :currentQuestion="currentQuestion" :isAdmin="isAdmin" />
+    <TeamList
+      :teamData="teamData"
+      :currentQuestion="currentQuestion"
+      :isAdmin="isAdmin"
+    />
     <ActionButton
       :isAdmin="isAdmin"
       :currentQuestion="currentQuestion"
@@ -32,17 +36,18 @@ const userInfo = ref(getUserInfo());
 // 함수
 const joinQuiz = () => {
   if (!currentQuestion.value) return false;
-  socket.emit("join-quiz", userInfo.value);
-  router.push({ path: "/quiz", state: { isRouter: true } });
+  socket.emit('join-quiz', userInfo.value);
+  router.push({ path: '/quiz', state: { isRouter: true } });
 };
 
 const joinAdminQuiz = () => {
-  socket.emit("join-admin-quiz");
-  router.push({ path: "/admin", state: { isRouter: true } });
+  socket.emit('join-admin-quiz');
+  router.push({ path: '/admin', state: { isRouter: true } });
 };
 
 // Life Cycle
 onMounted(() => {
+
   socket.on("login", (data) => {
     currentQuestion.value = data.currentQuestion;
 
@@ -75,7 +80,7 @@ onMounted(() => {
     });
 
     teamData.value = teams;
-    isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
+    isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
   });
 
   socket.on("start-quiz", (data) => {
@@ -92,7 +97,7 @@ onMounted(() => {
 
   setTimeout(async () => {
     if (!isData.value) {
-      await axios.get("/api/waiting").then((res) => {
+      await axios.get('/api/waiting').then((res) => {
         isAdmin.value = userInfo.value.isAdmin;
 
         if (res.data.currentQuestion) {

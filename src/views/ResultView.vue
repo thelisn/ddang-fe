@@ -37,20 +37,19 @@ const isData = ref(false);
 // Life Cycle
 onMounted(() => {
   userInfo.value = getUserInfo();
-
   socket.on("check-answer", (data) => {
     getResultData(data);
   });
 
-  socket.on("start-quiz", (data) => {
+  socket.on('start-quiz', (data) => {
     // 사번을 파라미터로 보낸다
-    socket.emit("join-quiz", userInfo.value);
-    router.push({ path: "/quiz", state: { isRouter: true } });
+    socket.emit('join-quiz', userInfo.value);
+    router.push({ path: '/quiz', state: { isRouter: true } });
   });
 
-  socket.on("show-end-winner", (data) => {
+  socket.on('show-end-winner', (data) => {
     router.push({
-      path: "/end",
+      path: '/end',
       state: { isRouter: true, userData: data.userData },
     });
   });
@@ -104,7 +103,6 @@ const getResultData = (data) => {
   min-height: 100dvh;
   background-color: #111;
   overflow: hidden;
-
   .answer-area {
     display: flex;
     flex-direction: column;

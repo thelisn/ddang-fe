@@ -1,13 +1,28 @@
 <template>
   <div class="question-list-container">
     <ul>
-      <li class="list-wrap" v-for="(question, idx) in questionData" :key="idx" :class="questionStatus(question)">
+      <li
+        class="list-wrap"
+        v-for="(question, idx) in questionData"
+        :key="idx"
+        :class="questionStatus(question)"
+      >
         <p class="number">Q{{ idx + 1 }}</p>
         <p class="result">
-          {{ question.isFinished ? question.question : question.isStarted ? "진행중" : question.question }}
+          {{
+            question.isFinished
+              ? question.question
+              : question.isStarted
+              ? '진행중'
+              : question.question
+          }}
         </p>
-        <button class="question-btn" :disabled="isEnd || question.isStarted" @click="startButton(question)">
-          {{ isEnd ? "종료" : question.isStarted ? "완료" : "시작" }}
+        <button
+          class="question-btn"
+          :disabled="isEnd || question.isStarted"
+          @click="startButton(question)"
+        >
+          {{ isEnd ? '종료' : question.isStarted ? '완료' : '시작' }}
         </button>
       </li>
     </ul>
@@ -15,22 +30,22 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from "vue";
+import { defineEmits, defineProps } from 'vue';
 
 const props = defineProps(["questionData", "currentQuestion", "isEnd"]);
 const emit = defineEmits(["start-quiz"]);
 
 const startButton = (question) => {
-  emit("start-quiz", question);
+  emit('start-quiz', question);
 };
 
 const questionStatus = (data) => {
   if (!data.isStarted) {
-    return "before";
+    return 'before';
   } else if (data.isFinished) {
     return null;
   } else {
-    return "on";
+    return 'on';
   }
 };
 </script>
@@ -92,12 +107,17 @@ const questionStatus = (data) => {
     .question-btn {
       width: 94px;
       padding: 6px 26px;
-      background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), #eb231c;
+      background: linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.5) 0%,
+          rgba(0, 0, 0, 0.5) 100%
+        ),
+        #eb231c;
       border-radius: 20px;
       color: #fff;
       font-size: 14px;
       font-weight: 500;
-      font-family: "Noto Sans KR";
+      font-family: 'Noto Sans KR';
 
       &:disabled {
         pointer-events: none;

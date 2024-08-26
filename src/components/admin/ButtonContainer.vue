@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from "vue";
+import { defineEmits, defineProps } from 'vue';
 
 defineProps(["isEnd", "isQuestionEndStatus"]);
 defineEmits(["finish", "restart"]);
@@ -26,7 +26,7 @@ defineEmits(["finish", "restart"]);
   padding: 20px;
 
   .finish-btn {
-    font-family: "Noto Sans KR";
+    font-family: 'Noto Sans KR';
     color: #fff;
     font-size: 22px;
     font-weight: 500;

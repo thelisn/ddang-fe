@@ -1,5 +1,5 @@
-import { reactive } from "vue";
-import { io } from "socket.io-client";
+import { reactive } from 'vue';
+import { io } from 'socket.io-client';
 
 export const state = reactive({
   connected: false,
@@ -17,23 +17,23 @@ const URL = process.env.VUE_APP_API_URL;
 
 export const socket = io(URL);
 
-socket.on("connect", () => {
+socket.on('connect', () => {
   state.connected = true;
 });
 
-socket.on("disconnect", () => {
+socket.on('disconnect', () => {
   state.connected = false;
 });
 
-socket.on("login-error", () => {
+socket.on('login-error', () => {
   state.loginError = true;
 });
 
-socket.on("login-success", (data) => {
+socket.on('login-success', (data) => {
   state.loginError = false;
   state.userName = data.id;
 
-  if (data.userType === "admin") {
+  if (data.userType === 'admin') {
     state.isAdmin = true;
   } else {
     state.isUser = true;
