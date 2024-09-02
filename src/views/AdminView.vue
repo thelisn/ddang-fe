@@ -3,10 +3,7 @@
   <div v-else id="admin-page">
     <LisnHeader />
 
-    <QuestionContainer
-      v-if="currentQuestion && currentQuestionData"
-      :currentQuestionData="currentQuestionData"
-    />
+    <QuestionContainer v-if="currentQuestion && currentQuestionData" :currentQuestionData="currentQuestionData" />
 
     <AnswerContainer
       v-if="currentQuestion"
@@ -35,7 +32,6 @@
 </template>
 
 <script setup>
-
 import { onBeforeUnmount, onMounted, ref, getCurrentInstance, computed } from "vue";
 import { socket } from "@/socket";
 import { getUserInfo, sortTeamMember } from "../utils/index";
@@ -154,11 +150,10 @@ const startQuiz = async (question) => {
   currentQuestion.value = question.number;
 
   // 시작하고자 하는 퀴즈 번호 파라미터로 전송
-  socket.emit('start-quiz', {
+  socket.emit("start-quiz", {
     userInfo: userInfo.value,
     questionNum: question.number,
   });
-
 
   await axios.get("/api/admin").then(({ data }) => {
     questionData.value = data.questionData;
@@ -170,20 +165,8 @@ const startQuiz = async (question) => {
   });
 };
 
-const questionStatus = (data) => {
-  if (!data.isStarted) {
-    return 'before';
-  } else {
-    if (data.isFinished) {
-      return null;
-    } else {
-      return 'on';
-    }
-  }
-};
-
 const updatePage = async () => {
-  await axios.get('/api/admin').then((res) => {
+  await axios.get("/api/admin").then((res) => {
     questionData.value = res.data.questionData;
     userData.value = res.data.userData;
     if (res.data.currentQuestion) {
@@ -191,6 +174,8 @@ const updatePage = async () => {
     }
     currentUser.value = res.data.currentUser;
     totalUser.value = res.data.totalUser;
+
+    console.log(res.data.userData);
 
     currentQuestionData.value = res.data.questionData.filter((data) => data.number === currentQuestion.value)[0];
     isLoading.value = false;
@@ -240,6 +225,6 @@ const revive = (data) => {
   position: relative;
   background-color: #111;
   padding: 60px 20px 20px;
-  font-family: 'Noto Sans KR';
+  font-family: "Noto Sans KR";
 }
 </style>

@@ -7,7 +7,7 @@
           class="user-data"
           v-for="(user, idx) in teamData[team.title]"
           :key="idx"
-          :class="!user.isAlive ? 'dead' : null"
+          :class="getUserStatus(user.isAlive)"
           @click="emit('revive', user)"
         >
           <div :class="['user-status', team.class]"></div>
@@ -36,6 +36,10 @@ const teams = [
   { title: "디채", class: "dichae" },
   { title: "모니모", class: "monimo" },
 ];
+
+const getUserStatus = (isAlive) => {
+  return isAlive === null ? "not-enter" : !isAlive ? "dead" : null;
+};
 </script>
 
 <style scoped lang="scss">
@@ -154,6 +158,19 @@ const teams = [
         margin-top: 22px;
         align-items: center;
         margin-right: 12px;
+
+        &.not-enter {
+          user-select: none;
+          pointer-events: none;
+
+          .user-status {
+            border: 1px solid #555;
+            background-color: transparent;
+          }
+          .user-name {
+            color: #555;
+          }
+        }
 
         &.dead {
           .user-status {
