@@ -1,11 +1,7 @@
 <template>
   <div id="waiting-room">
     <LisnHeader />
-    <TeamList
-      :teamData="teamData"
-      :currentQuestion="currentQuestion"
-      :isAdmin="isAdmin"
-    />
+    <TeamList :teamData="teamData" />
     <ActionButton
       :isAdmin="isAdmin"
       :currentQuestion="currentQuestion"
@@ -36,51 +32,33 @@ const userInfo = ref(getUserInfo());
 // 함수
 const joinQuiz = () => {
   if (!currentQuestion.value) return false;
-  socket.emit('join-quiz', userInfo.value);
-  router.push({ path: '/quiz', state: { isRouter: true } });
+  socket.emit("join-quiz", userInfo.value);
+  router.push({ path: "/quiz", state: { isRouter: true } });
 };
 
 const joinAdminQuiz = () => {
-  socket.emit('join-admin-quiz');
-  router.push({ path: '/admin', state: { isRouter: true } });
+  socket.emit("join-admin-quiz");
+  router.push({ path: "/admin", state: { isRouter: true } });
 };
 
 // Life Cycle
 onMounted(() => {
-
   socket.on("login", (data) => {
-    currentQuestion.value = data.currentQuestion;
+    const teams = fieldTeamData(data.teamData);
 
-    let teams = {};
-
-    data.teamData.forEach((person) => {
-      const { team } = person;
-
-      if (!teams[team]) {
-        teams[team] = [];
-      }
-      teams[team].push(person);
-    });
-
+    isData.value = true;
     teamData.value = teams;
     isAdmin.value = data.userData.isAdmin;
-    isData.value = true;
+    currentQuestion.value = data.currentQuestion;
   });
 
   socket.on("rejoin", (data) => {
-    currentQuestion.value = data.currentQuestion;
-    let teams = {};
-
-    data.teamData.forEach((person) => {
-      const { team } = person;
-      if (!teams[team]) {
-        teams[team] = [];
-      }
-      teams[team].push(person);
-    });
+    const teams = fieldTeamData(data.teamData);
+    const isAdmin = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
 
     teamData.value = teams;
-    isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
+    isAdmin.value = isAdmin;
+    currentQuestion.value = data.currentQuestion;
   });
 
   socket.on("start-quiz", (data) => {
@@ -97,25 +75,14 @@ onMounted(() => {
 
   setTimeout(async () => {
     if (!isData.value) {
-      await axios.get('/api/waiting').then((res) => {
-        isAdmin.value = userInfo.value.isAdmin;
-
-        if (res.data.currentQuestion) {
-          currentQuestion.value = res.data.currentQuestion;
-        }
-
-        let teams = {};
-        res.data.userData.forEach((person) => {
-          const { team } = person;
-
-          if (!teams[team]) {
-            teams[team] = [];
-          }
-
-          teams[team].push(person);
-        });
+      await axios.get("/api/waiting").then((res) => {
+        console.log(res.data);
+        const teams = fieldTeamData(res.data.userData);
 
         teamData.value = teams;
+        isAdmin.value = userInfo.value.isAdmin;
+
+        if (res.data.currentQuestion) currentQuestion.value = res.data.currentQuestion;
       });
     }
   }, 500);
@@ -128,6 +95,21 @@ onBeforeUnmount(() => {
   socket.off("show-answer");
   socket.off("show-end-winner");
 });
+
+const fieldTeamData = (data) => {
+  let teams = {};
+
+  data.forEach((person) => {
+    const { team } = person;
+
+    if (!teams[team]) {
+      teams[team] = [];
+    }
+    teams[team].push(person);
+  });
+
+  return teams;
+};
 </script>
 
 <style lang="scss" scoped>

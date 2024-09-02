@@ -1,12 +1,7 @@
 <template>
   <div class="header">
     <h1 class="quiz-header" @click="clearLocalStorage">
-      <img
-        class="lisn-header"
-        src="@/assets/images/lisn.svg"
-        alt="LISN logo"
-        aria-hidden="true"
-      />
+      <img class="lisn-header" src="@/assets/images/lisn.svg" alt="LISN logo" aria-hidden="true" />
     </h1>
     <div class="user-area">
       <div v-if="isAdmin" class="admin-status">ADMIN</div>
@@ -17,9 +12,8 @@
 </template>
 
 <script setup>
-import router from '@/router';
-import { getClass, clearLocalStorage } from '@/utils/index';
-import { computed, onMounted, ref } from 'vue';
+import { getClass, clearLocalStorage } from "@/utils/index";
+import { onMounted, ref } from "vue";
 
 // 변수
 const userName = ref(null);
@@ -29,8 +23,8 @@ const isAdmin = ref(false);
 
 // Life Cycle
 onMounted(() => {
-  userName.value = JSON.parse(localStorage.getItem('userInfo')).name;
-  isAdmin.value = JSON.parse(localStorage.getItem('userInfo')).isAdmin;
+  userName.value = JSON.parse(localStorage.getItem("userInfo")).name;
+  isAdmin.value = JSON.parse(localStorage.getItem("userInfo")).isAdmin;
 });
 </script>
 

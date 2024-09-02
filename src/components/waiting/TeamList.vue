@@ -4,7 +4,7 @@
       <p class="team-title">{{ team[0].team }}</p>
       <ul class="user-wrap">
         <li class="user-data" v-for="member in team" :key="member">
-          <div class="user-status" :class="getClass(member.team)"></div>
+          <div class="user-status" :class="[getClass(member.team), member.isEnter && 'is-enter']"></div>
           <p class="user-name">{{ member.name }}</p>
         </li>
       </ul>
@@ -16,7 +16,7 @@
 import { defineProps } from "vue";
 import { getClass } from "@/utils";
 
-const props = defineProps(["teamData", "currentQuestion", "isAdmin"]);
+const props = defineProps(["teamData"]);
 </script>
 
 <style lang="scss" scoped>
@@ -113,6 +113,11 @@ const props = defineProps(["teamData", "currentQuestion", "isAdmin"]);
           height: 16px;
           border-radius: 50%;
           margin-right: 9px;
+
+          &:not(.is-enter) {
+            background-color: transparent;
+            border: 1px solid currentColor;
+          }
         }
 
         .user-name {
